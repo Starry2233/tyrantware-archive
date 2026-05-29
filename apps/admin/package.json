@@ -1,5 +1,5 @@
 {
-  "name": "@fbls/admin",
+  "name": "@tyrantware/admin",
   "private": true,
   "type": "module",
   "scripts": {
@@ -8,7 +8,7 @@
     "check": "tsc --project tsconfig.json"
   },
   "dependencies": {
-    "@fbls/shared": "workspace:*",
+    "@tyrantware/shared": "*",
     "@mateothegreat/svelte5-router": "^2.16.19",
     "svelte": "^5.43.2"
   },
