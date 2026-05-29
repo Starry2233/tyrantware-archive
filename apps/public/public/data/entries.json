@@ -1,0 +1,472 @@
+[
+  {
+    "vendor": "微软",
+    "software_name": "Windows 10",
+    "malware_category": "监视",
+    "description": "Windows 10 包含大量遥测和监视功能，默认收集用户的输入、浏览历史、位置数据、应用使用情况等个人信息，用户无法完全关闭这些数据收集。",
+    "evidence_urls": "https://www.gnu.org/proprietary/malware-microsoft.html",
+    "images": [],
+    "created_at": "2024-06-01 00:00:00",
+    "updated_at": "2024-06-01 00:00:00"
+  },
+  {
+    "vendor": "微软",
+    "software_name": "Windows 11",
+    "malware_category": "强制",
+    "description": "Windows 11 强制要求 Microsoft 帐户登录，通过系统更新强制推送不需要的软件。对硬件的不兼容限制迫使大量用户淘汰仍然可用的电脑。通过 Windows Update 这一通用后门，微软可以强制向用户推送任何更改。",
+    "evidence_urls": "https://www.gnu.org/proprietary/malware-microsoft.html",
+    "images": [],
+    "created_at": "2024-06-02 00:00:00",
+    "updated_at": "2024-06-02 00:00:00"
+  },
+  {
+    "vendor": "微软",
+    "software_name": "Microsoft Office",
+    "malware_category": "订阅",
+    "description": "Microsoft Office 从买断制转为强制订阅制（Microsoft 365），用户不再拥有软件的永久使用权。订阅到期后软件进入只读模式。云端集成的功能收集用户文档数据。Office 365 还使雇主能够监视员工。",
+    "evidence_urls": "https://www.gnu.org/proprietary/malware-microsoft.html",
+    "images": [],
+    "created_at": "2024-06-03 00:00:00",
+    "updated_at": "2024-06-03 00:00:00"
+  },
+  {
+    "vendor": "微软",
+    "software_name": "Microsoft Edge",
+    "malware_category": "干扰",
+    "description": "Microsoft Edge 通过系统策略干扰用户选择其他浏览器，包括在搜索结果显示推广 Edge 的广告、重置默认浏览器设置、强制在特定链接中打开 Edge。Edge 默认将用户浏览的图片 URL 发送给微软服务器。",
+    "evidence_urls": "https://www.gnu.org/proprietary/malware-microsoft.html",
+    "images": [],
+    "created_at": "2024-06-04 00:00:00",
+    "updated_at": "2024-06-04 00:00:00"
+  },
+  {
+    "vendor": "微软",
+    "software_name": "Windows Disk Encryption",
+    "malware_category": "后门",
+    "description": "微软在其磁盘加密系统中留有后门，使得微软可以绕过用户设置的加密访问磁盘内容。BitLocker 的恢复密钥默认上传到 Microsoft 帐户，政府机构可以通过合法或非法途径获取。",
+    "evidence_urls": "https://www.gnu.org/proprietary/proprietary-back-doors.html",
+    "images": [],
+    "created_at": "2024-06-05 00:00:00",
+    "updated_at": "2024-06-05 00:00:00"
+  },
+  {
+    "vendor": "微软",
+    "software_name": "Skype",
+    "malware_category": "监视",
+    "description": "Skype 在被微软收购后改为中央服务器架构，所有通信都经过微软服务器，使微软有能力监控、记录和分析用户的语音和文字通信内容。微软于 2025 年 5 月关闭了 Skype 服务，所有依赖该服务的用户失去了通信能力。",
+    "evidence_urls": "https://www.gnu.org/proprietary/proprietary-surveillance.html",
+    "images": [],
+    "created_at": "2024-06-06 00:00:00",
+    "updated_at": "2024-06-06 00:00:00"
+  },
+  {
+    "vendor": "苹果",
+    "software_name": "iOS",
+    "malware_category": "监狱",
+    "description": "iOS 是一个完全锁闭的操作系统，用户只能安装苹果审核通过的应用，无法访问文件系统，无法运行未签名的代码，无法自由选择默认应用。苹果可以远程删除应用。",
+    "evidence_urls": "https://www.gnu.org/proprietary/proprietary-jails.html",
+    "images": [],
+    "created_at": "2024-06-07 00:00:00",
+    "updated_at": "2024-06-07 00:00:00"
+  },
+  {
+    "vendor": "苹果",
+    "software_name": "macOS",
+    "malware_category": "独裁",
+    "description": "macOS 逐渐走向 iOS 式的锁闭模式，Gatekeeper 强制要求所有应用经过公证，新机制限制用户运行未签名的软件。苹果要求所有 MacOS 应用软件须经苹果批准。系统组件使用签名强制验证，用户失去了对自有计算机的控制权。",
+    "evidence_urls": "https://www.gnu.org/proprietary/proprietary-tyrants.html",
+    "images": [],
+    "created_at": "2024-06-08 00:00:00",
+    "updated_at": "2024-06-08 00:00:00"
+  },
+  {
+    "vendor": "苹果",
+    "software_name": "iTunes",
+    "malware_category": "DRM",
+    "description": "iTunes 使用 FairPlay DRM 对购买的媒体文件进行加密，限制用户在不同设备间自由播放、转换格式或制作备份。用户购买的歌曲和视频实际上只是获得了受限的许可证而非真正的所有权。",
+    "evidence_urls": "https://www.gnu.org/proprietary/proprietary-drm.html",
+    "images": [],
+    "created_at": "2024-06-09 00:00:00",
+    "updated_at": "2024-06-09 00:00:00"
+  },
+  {
+    "vendor": "苹果",
+    "software_name": "iPhone",
+    "malware_category": "过时",
+    "description": "苹果通过系统更新故意降低旧款 iPhone 的运行速度（电池门），迫使用户购买新硬件。苹果与三星故意通过软件更新降低旧设备性能，这是有计划地使产品过时的典型做法。",
+    "evidence_urls": "https://www.gnu.org/proprietary/proprietary-obsolescence.html",
+    "images": [],
+    "created_at": "2024-06-10 00:00:00",
+    "updated_at": "2024-06-10 00:00:00"
+  },
+  {
+    "vendor": "苹果",
+    "software_name": "Siri",
+    "malware_category": "监视",
+    "description": "苹果被爆料在用户未主动激活 Siri 时秘密激活该软件以录制用户对话。这不是偶发事件，而是系统性的行为。苹果和谷歌的语音助手都存在类似问题，员工可以听取录音并访问位置等个人信息。",
+    "evidence_urls": "https://www.gnu.org/proprietary/proprietary-surveillance.html",
+    "images": [],
+    "created_at": "2024-06-11 00:00:00",
+    "updated_at": "2024-06-11 00:00:00"
+  },
+  {
+    "vendor": "苹果",
+    "software_name": "iCloud",
+    "malware_category": "监视",
+    "description": "iCloud 将用户的数据存储在苹果服务器上，苹果可以访问用户的照片、联系人、日历、浏览器书签和密码。英国政府要求全球访问加密用户数据后，苹果停止了在英国提供 iCloud 端到端加密。",
+    "evidence_urls": "https://www.gnu.org/proprietary/proprietary-surveillance.html",
+    "images": [],
+    "created_at": "2024-06-12 00:00:00",
+    "updated_at": "2024-06-12 00:00:00"
+  },
+  {
+    "vendor": "谷歌",
+    "software_name": "Android",
+    "malware_category": "监视",
+    "description": "Android 操作系统深度集成 Google Play Services，持续收集用户的位置信息、搜索历史、应用使用情况等数据用于广告定向。即使用户关闭定位服务，系统仍可通过基站三角定位获取大致位置。Android 手机从 2017 年起一直在收集附近基站的地址并发送给 Google。",
+    "evidence_urls": "https://www.gnu.org/proprietary/malware-google.html",
+    "images": [],
+    "created_at": "2024-06-13 00:00:00",
+    "updated_at": "2024-06-13 00:00:00"
+  },
+  {
+    "vendor": "谷歌",
+    "software_name": "Chrome",
+    "malware_category": "DRM",
+    "description": "Chrome 浏览器包含 DRM 功能，限制非 Chrome Web Store 来源的扩展程序安装。在 Windows 和 macOS 上，Chrome 禁用非商店托管的扩展。Chrome 是一个监视工具，让数千追踪器入侵用户的计算机。",
+    "evidence_urls": "https://www.gnu.org/proprietary/malware-google.html",
+    "images": [],
+    "created_at": "2024-06-14 00:00:00",
+    "updated_at": "2024-06-14 00:00:00"
+  },
+  {
+    "vendor": "谷歌",
+    "software_name": "YouTube",
+    "malware_category": "操纵",
+    "description": "YouTube 使用算法操纵用户观看行为，推荐算法倾向于推荐极端化内容以增加观看时间。强制播放不可跳过的广告，使用 DRM 限制内容下载。Google 的广告平台曾在 YouTube 用户计算机上通过专有 JavaScript 运行加密货币挖矿代码。",
+    "evidence_urls": "https://www.gnu.org/proprietary/proprietary-manipulation.html",
+    "images": [],
+    "created_at": "2024-06-15 00:00:00",
+    "updated_at": "2024-06-15 00:00:00"
+  },
+  {
+    "vendor": "谷歌",
+    "software_name": "Google Play",
+    "malware_category": "DRM",
+    "description": "Google Play 条款要求用户接受 Google 应用的通用后门。Google Play 使用 Widevine DRM 限制用户在 Android 设备上的媒体使用。购买的影片和音乐受 DRM 保护，用户无法在自由软件播放器中播放。",
+    "evidence_urls": "https://www.gnu.org/proprietary/malware-google.html",
+    "images": [],
+    "created_at": "2024-06-16 00:00:00",
+    "updated_at": "2024-06-16 00:00:00"
+  },
+  {
+    "vendor": "谷歌",
+    "software_name": "Google Assistant",
+    "malware_category": "监视",
+    "description": "Google Assistant 在不应监听时录制用户的对话。Google 的分包商泄露了数千条机密语音录音，通过这些录音可以轻易识别用户身份。Google 停止在 Assistant 中使用人类审核员，但这并不能解决自动化系统收集数据的问题。",
+    "evidence_urls": "https://www.gnu.org/proprietary/proprietary-surveillance.html",
+    "images": [],
+    "created_at": "2024-06-17 00:00:00",
+    "updated_at": "2024-06-17 00:00:00"
+  },
+  {
+    "vendor": "谷歌",
+    "software_name": "Google Nest",
+    "malware_category": "监视",
+    "description": "Google Nest 监控/监视摄像头始终绑定到 Google 服务器，24/7 录制视频，且基于订阅制收费。Google 通过后门向其音箱设备发送软件更新，使其开始监听烟雾报警器等声音。用户无法控制设备的数据处理方式。",
+    "evidence_urls": "https://www.gnu.org/proprietary/proprietary-surveillance.html",
+    "images": [],
+    "created_at": "2024-06-18 00:00:00",
+    "updated_at": "2024-06-18 00:00:00"
+  },
+  {
+    "vendor": "Adobe",
+    "software_name": "Creative Cloud",
+    "malware_category": "订阅",
+    "description": "Adobe 软件从买断制全面转为订阅制，用户不再拥有软件所有权。停止付费后将无法使用。Adobe 的服务条款允许自己监视用户上传到其服务器的材料。Adobe 曾取消所有委内瑞拉用户的软件订阅。",
+    "evidence_urls": "https://www.gnu.org/proprietary/malware-adobe.html",
+    "images": [],
+    "created_at": "2024-06-19 00:00:00",
+    "updated_at": "2024-06-19 00:00:00"
+  },
+  {
+    "vendor": "Adobe",
+    "software_name": "Adobe Flash",
+    "malware_category": "不安全",
+    "description": "Adobe Flash 历史上存在大量安全漏洞，是恶意软件传播的主要载体之一。漏洞修复依赖于 Adobe 的时间表，用户无法自行审计或修复安全缺陷。Flash Player 有一个通用后门，允许 Adobe 随时控制或禁用该软件。",
+    "evidence_urls": "https://www.gnu.org/proprietary/proprietary-insecurity.html",
+    "images": [],
+    "created_at": "2024-06-20 00:00:00",
+    "updated_at": "2024-06-20 00:00:00"
+  },
+  {
+    "vendor": "Adobe",
+    "software_name": "Adobe Reader",
+    "malware_category": "监视",
+    "description": "Adobe Digital Editions 作为多数美国图书馆使用的电子书阅读器，会将大量用户数据发送给 Adobe。Acrobat Reader 的升级程序会静默修改 Chrome 浏览器。Adobe 的服务条款给予自身监视用户上传材料的权限。",
+    "evidence_urls": "https://www.gnu.org/proprietary/malware-adobe.html",
+    "images": [],
+    "created_at": "2024-06-21 00:00:00",
+    "updated_at": "2024-06-21 00:00:00"
+  },
+  {
+    "vendor": "亚马逊",
+    "software_name": "Kindle",
+    "malware_category": "束缚",
+    "description": "Kindle 使用专有格式和 DRM 将用户锁在其生态系统中。用户购买的电子书实际上只是获得有限许可，亚马逊可以远程删除已购买的内容。亚马逊正在断开旧款 Kindle 与 DRM 书店的连接，迫使用户购买新设备。",
+    "evidence_urls": "https://www.gnu.org/proprietary/malware-amazon.html",
+    "images": [],
+    "created_at": "2024-06-22 00:00:00",
+    "updated_at": "2024-06-22 00:00:00"
+  },
+  {
+    "vendor": "亚马逊",
+    "software_name": "Alexa",
+    "malware_category": "监视",
+    "description": "Amazon Echo/Alexa 持续监听用户的环境声音，录音被上传到亚马逊服务器进行分析和存储。亚马逊任意决定让所有 Echo 设备将所有音频发送到亚马逊服务器，即使用户指定了本地处理。录音可被亚马逊员工收听。",
+    "evidence_urls": "https://www.gnu.org/proprietary/proprietary-surveillance.html",
+    "images": [],
+    "created_at": "2024-06-23 00:00:00",
+    "updated_at": "2024-06-23 00:00:00"
+  },
+  {
+    "vendor": "亚马逊",
+    "software_name": "Ring",
+    "malware_category": "监视",
+    "description": "Amazon Ring 门铃摄像头将视频流持续上传到亚马逊云端，亚马逊可长期保存视频。Ring 还为其他公司进行监视。设备缺乏真正的端到端加密。Ring 曾存在安全漏洞使攻击者可获取用户 WiFi 密码。",
+    "evidence_urls": "https://www.gnu.org/proprietary/malware-amazon.html",
+    "images": [],
+    "created_at": "2024-06-24 00:00:00",
+    "updated_at": "2024-06-24 00:00:00"
+  },
+  {
+    "vendor": "Meta",
+    "software_name": "Facebook",
+    "malware_category": "监视",
+    "description": "Facebook 收集用户的社交关系、兴趣爱好、浏览习惯、位置信息等海量个人数据用于精准广告投放。通过追踪像素和社交插件，Facebook 可在第三方网站追踪用户行为。大约 40% 的免费 Android 应用向 Facebook 报告用户操作。",
+    "evidence_urls": "https://www.gnu.org/proprietary/proprietary-surveillance.html",
+    "images": [],
+    "created_at": "2024-06-25 00:00:00",
+    "updated_at": "2024-06-25 00:00:00"
+  },
+  {
+    "vendor": "Meta",
+    "software_name": "WhatsApp",
+    "malware_category": "监视",
+    "description": "WhatsApp 虽然宣传端到端加密，但 Meta 仍在收集用户的元数据。2021 年隐私政策更新后，用户数据被强制与 Meta 旗下其他平台共享。WhatsApp 强制用户将敏感个人数据交给其母公司。",
+    "evidence_urls": "https://www.gnu.org/proprietary/proprietary-surveillance.html",
+    "images": [],
+    "created_at": "2024-06-26 00:00:00",
+    "updated_at": "2024-06-26 00:00:00"
+  },
+  {
+    "vendor": "Meta",
+    "software_name": "Instagram",
+    "malware_category": "监视",
+    "description": "Facebook 通过秘密打开设备摄像头来监视 Instagram 用户。Oculus 头戴设备要求用户向 Facebook 表明身份，使 Facebook 可以全面监视 Oculus 用户。",
+    "evidence_urls": "https://www.gnu.org/proprietary/proprietary-surveillance.html",
+    "images": [],
+    "created_at": "2024-06-27 00:00:00",
+    "updated_at": "2024-06-27 00:00:00"
+  },
+  {
+    "vendor": "惠普",
+    "software_name": "HPMediaNetwork",
+    "malware_category": "监视",
+    "description": "HP 通过 Windows Update 在用户电脑中推送名为 HPMediaNetwork.exe 的间谍软件，在后台收集用户设备和浏览数据，向用户推送个性化弹窗广告，并将数据出售给广告公司。即使选择退出也无法完全阻止广告。",
+    "evidence_urls": "https://www.gnu.org/proprietary/malware-hp.html",
+    "images": [],
+    "created_at": "2024-06-28 00:00:00",
+    "updated_at": "2024-06-28 00:00:00"
+  },
+  {
+    "vendor": "惠普",
+    "software_name": "HP Printer",
+    "malware_category": "强制",
+    "description": "惠普打印机通过固件更新强制用户使用原装墨盒，使用通用后门远程安装恶意软件使打印机拒绝使用非 HP 墨盒。HP 通过 Windows Update 推送的更新会欺骗用户安装拒绝第三方墨盒的恶意更新。",
+    "evidence_urls": "https://www.gnu.org/proprietary/malware-hp.html",
+    "images": [],
+    "created_at": "2024-06-29 00:00:00",
+    "updated_at": "2024-06-29 00:00:00"
+  },
+  {
+    "vendor": "百度",
+    "software_name": "百度应用",
+    "malware_category": "监视",
+    "description": "百度应用被发现在收集可被用于长期追踪用户的敏感个人数据，超过 14 亿用户受影响，用户隐私受到严重威胁。",
+    "evidence_urls": "https://www.gnu.org/proprietary/proprietary-surveillance.html",
+    "images": [],
+    "created_at": "2024-06-30 00:00:00",
+    "updated_at": "2024-06-30 00:00:00"
+  },
+  {
+    "vendor": "小米",
+    "software_name": "Xiaomi Phones",
+    "malware_category": "后门",
+    "description": "小米手机包含审查功能可屏蔽特定政治词汇，默认关闭但小米有后门可远程激活。小米手机的应用处理器中有通用后门供小米使用。启动加载器解锁后制造商仍可通过后门远程控制设备。",
+    "evidence_urls": "https://www.gnu.org/proprietary/proprietary-back-doors.html",
+    "images": [],
+    "created_at": "2024-07-01 00:00:00",
+    "updated_at": "2024-07-01 00:00:00"
+  },
+  {
+    "vendor": "字节跳动",
+    "software_name": "TikTok",
+    "malware_category": "不安全",
+    "description": "TikTok 利用 Android 安全漏洞获取用户 MAC 地址。TikTok 的 iOS 应用内浏览器存在安全漏洞，可被利用进行追踪。TikTok 应用收集用户的生物识别标识符和生物识别信息。",
+    "evidence_urls": "https://www.gnu.org/proprietary/malware-google.html",
+    "images": [],
+    "created_at": "2024-07-02 00:00:00",
+    "updated_at": "2024-07-02 00:00:00"
+  },
+  {
+    "vendor": "特斯拉",
+    "software_name": "Tesla Vehicles",
+    "malware_category": "订阅",
+    "description": "特斯拉汽车中的专有软件人为限制车辆的行驶里程，要求支付赎金才能解锁电池的全部充电容量。这种将硬件预装功能作为付费订阅的做法将车辆所有权变为持续租赁。特斯拉汽车有一个通用远程后门。",
+    "evidence_urls": "https://www.gnu.org/proprietary/proprietary-subscriptions.html",
+    "images": [],
+    "created_at": "2024-07-03 00:00:00",
+    "updated_at": "2024-07-03 00:00:00"
+  },
+  {
+    "vendor": "微软",
+    "software_name": "Windows Recall",
+    "malware_category": "监视",
+    "description": "Windows Recall 是微软 Copilot 工具的一项功能，预装在 AI 专用计算机上。Recall 记录用户在计算机上所做的一切并允许搜索这些记录，但存在大量安全漏洞，对用户隐私构成严重风险。",
+    "evidence_urls": "https://www.gnu.org/proprietary/malware-microsoft.html",
+    "images": [],
+    "created_at": "2024-07-04 00:00:00",
+    "updated_at": "2024-07-04 00:00:00"
+  },
+  {
+    "vendor": "微软",
+    "software_name": "Microsoft Teams",
+    "malware_category": "监视",
+    "description": "Microsoft Teams 一直在收集澳大利亚学校学生的语音和面部数据以供给 CoPilot 聊天机器人。Teams 的不安全性还可能导致恶意 GIF 窃取用户数据。Google Meet、Teams 和 WebEx 都在收集通话时长、参与者、IP 地址等个人信息。",
+    "evidence_urls": "https://www.gnu.org/proprietary/malware-microsoft.html",
+    "images": [],
+    "created_at": "2024-07-05 00:00:00",
+    "updated_at": "2024-07-05 00:00:00"
+  },
+  {
+    "vendor": "微软",
+    "software_name": "Outlook",
+    "malware_category": "监视",
+    "description": "Outlook 已变成数据收集和广告投放服务。由于 Outlook 与微软云服务集成且不支持端到端加密，微软可以完全访问用户的电子邮件、联系人和日历事件。微软利用这些数据投放针对性广告。",
+    "evidence_urls": "https://www.gnu.org/proprietary/malware-microsoft.html",
+    "images": [],
+    "created_at": "2024-07-06 00:00:00",
+    "updated_at": "2024-07-06 00:00:00"
+  },
+  {
+    "vendor": "微软",
+    "software_name": "OneDrive",
+    "malware_category": "强制",
+    "description": "微软一直骚扰想要关闭 OneDrive 的用户，强制他们给出关闭原因。Windows 11 默认配置下会在未征求用户许可的情况下将用户文件和个人信息上传到微软云端。如果超出分配存储容量则用户需付费。",
+    "evidence_urls": "https://www.gnu.org/proprietary/malware-microsoft.html",
+    "images": [],
+    "created_at": "2024-07-07 00:00:00",
+    "updated_at": "2024-07-07 00:00:00"
+  },
+  {
+    "vendor": "微软",
+    "software_name": "Xbox",
+    "malware_category": "监狱",
+    "description": "要在 Xbox 主机上安装和使用第三方操作系统和程序，用户必须突破微软施加的限制。微软录制了 Xbox 用户的声音并让人类员工收听这些录音。",
+    "evidence_urls": "https://www.gnu.org/proprietary/malware-microsoft.html",
+    "images": [],
+    "created_at": "2024-07-08 00:00:00",
+    "updated_at": "2024-07-08 00:00:00"
+  },
+  {
+    "vendor": "三星",
+    "software_name": "Samsung TVs",
+    "malware_category": "后门",
+    "description": "近期的三星电视存在后门，三星可以通过该后门远程禁用设备。三星还禁用了其专有 Android 发行版中解锁引导加载程序的选项，使用户无法安装第三方操作系统。",
+    "evidence_urls": "https://www.gnu.org/proprietary/proprietary-back-doors.html",
+    "images": [],
+    "created_at": "2024-07-09 00:00:00",
+    "updated_at": "2024-07-09 00:00:00"
+  },
+  {
+    "vendor": "任天堂",
+    "software_name": "Nintendo Switch",
+    "malware_category": "监狱",
+    "description": "任天堂投入大量精力阻止用户在 Switch 主机上安装第三方软件。Switch 现在完全是监狱系统。在 2025 年的用户帐户协议更新中，任天堂警告 Switch 主机可能因违反条款而被永久禁用（远程封禁）。",
+    "evidence_urls": "https://www.gnu.org/proprietary/proprietary-jails.html",
+    "images": [],
+    "created_at": "2024-07-10 00:00:00",
+    "updated_at": "2024-07-10 00:00:00"
+  },
+  {
+    "vendor": "索尼",
+    "software_name": "PlayStation 3",
+    "malware_category": "独裁",
+    "description": "索尼限制了对 PlayStation 3 GPU 的访问权限，使得安装了 GNU/Linux 操作系统的用户无法充分利用其性能。当有人突破此限制时，索尼直接移除了安装其他操作系统的能力。",
+    "evidence_urls": "https://www.gnu.org/proprietary/proprietary-tyrants.html",
+    "images": [],
+    "created_at": "2024-07-11 00:00:00",
+    "updated_at": "2024-07-11 00:00:00"
+  },
+  {
+    "vendor": "BMW",
+    "software_name": "BMW ConnectedDrive",
+    "malware_category": "订阅",
+    "description": "宝马试图将汽车的部分功能锁定，迫使用户为已购买的汽车功能付费。宝马曾诱导英国客户以订阅方式为新车的内置加热座椅功能付费。宝马通过无线电操作的后门强制更新汽车软件。",
+    "evidence_urls": "https://www.gnu.org/proprietary/proprietary-subscriptions.html",
+    "images": [],
+    "created_at": "2024-07-12 00:00:00",
+    "updated_at": "2024-07-12 00:00:00"
+  },
+  {
+    "vendor": "Zoom",
+    "software_name": "Zoom",
+    "malware_category": "欺骗",
+    "description": "Zoom 多年来一直向用户谎称其端到端加密。Zoom 的 iOS 版本在用户没有 Facebook 账户的情况下也将用户数据发送给 Facebook。Zoom 存在零日漏洞可被用于远程代码执行攻击。",
+    "evidence_urls": "https://www.gnu.org/proprietary/proprietary-deception.html",
+    "images": [],
+    "created_at": "2024-07-13 00:00:00",
+    "updated_at": "2024-07-13 00:00:00"
+  },
+  {
+    "vendor": "Spotify",
+    "software_name": "Spotify",
+    "malware_category": "监视",
+    "description": "Spotify 应用收集用户数据以识别和了解用户的音乐、情绪、心态、活动和品味。该程序每天记录超过 1500 亿条事件，包含用户数据和个人信息。Spotify 曾销售音乐流媒体设备，但停止支持后因专有性质无法再使用。",
+    "evidence_urls": "https://www.gnu.org/proprietary/proprietary-surveillance.html",
+    "images": [],
+    "created_at": "2024-07-14 00:00:00",
+    "updated_at": "2024-07-14 00:00:00"
+  },
+  {
+    "vendor": "丰田",
+    "software_name": "Toyota Connected",
+    "malware_category": "监视",
+    "description": "新款丰田汽车将驾驶数据上传到 AWS，用于根据驾驶行为创建定制保险保费。联网汽车收集的数据远超用户预期，且用户无法控制数据的收集和共享方式。",
+    "evidence_urls": "https://www.gnu.org/proprietary/proprietary-surveillance.html",
+    "images": [],
+    "created_at": "2024-07-15 00:00:00",
+    "updated_at": "2024-07-15 00:00:00"
+  },
+  {
+    "vendor": "Vizio",
+    "software_name": "Vizio Smart TV",
+    "malware_category": "监视",
+    "description": "Vizio 电视收集电视所能看到的一切数据，并将这些数据出售给第三方。新款 Vizio 智能电视的部分功能需要沃尔玛账户登录才能使用，将硬件功能锁定在账户登录之后。",
+    "evidence_urls": "https://www.gnu.org/proprietary/proprietary-surveillance.html",
+    "images": [],
+    "created_at": "2024-07-16 00:00:00",
+    "updated_at": "2024-07-16 00:00:00"
+  },
+  {
+    "vendor": "小天才",
+    "software_name": "小天才电话手表",
+    "malware_category": "独裁",
+    "description": "小天才儿童手表在检测到用户 root 设备后，以国家「清朗」整治行动为理由恶意封禁用户账号，剥夺用户对自己设备的控制权。其系统存在严格的反刷机机制，最新版本中的 systemXsesService 组件进一步限制用户对设备的自主控制。系统存在高危提权漏洞，威胁用户安全。小天才通过封闭生态垄断儿童社交圈，强制用户使用其专有社交平台。其系统基于 Linux 内核但未遵守 GPLv2 协议，未开源其修改后的内核代码。",
+    "evidence_urls": "https://keepxtcopen.github.io/keepxtcopen",
+    "images": [],
+    "created_at": "2026-05-29 00:00:00",
+    "updated_at": "2026-05-29 00:00:00"
+  }
+]

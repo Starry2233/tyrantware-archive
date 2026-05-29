@@ -1,5 +1,5 @@
-import type { AuthPayload, DashboardPayload, FlashMessage } from '@fbls/shared'
-import { apiPaths, localizeTimeFields } from '@fbls/shared'
+import type { AuthPayload, DashboardPayload, FlashMessage } from '@tyrantware/shared'
+import { apiPaths, localizeTimeFields } from '@tyrantware/shared'
 import { auth, setAuth } from './auth.svelte'
 
 const textOf = async (response: Response) => {
@@ -39,9 +39,9 @@ export const adminApi = {
     const payload = (await response.json()) as DashboardPayload
 
     return {
-      reports: payload.reports.map(localizeTimeFields),
-      appeals: payload.appeals.map(localizeTimeFields),
-      blacklistEntries: payload.blacklistEntries.map(localizeTimeFields)
+      submissions: payload.submissions.map(localizeTimeFields),
+      corrections: payload.corrections.map(localizeTimeFields),
+      malwareEntries: payload.malwareEntries.map(localizeTimeFields)
     }
   },
   async login(username: string, password: string) {
@@ -56,15 +56,15 @@ export const adminApi = {
     return payload
   },
   logout: () => post('/api/admin/logout', {}),
-  approveAppeal: (id: number, admin_note: string) =>
-    post(`/api/admin/appeals/${id}/approve`, { admin_note }),
-  approveReport: (id: number, admin_note: string, threat_level: string) =>
-    post(`/api/admin/reports/${id}/approve`, { admin_note, threat_level }),
-  rejectAppeal: (id: number, admin_note: string) =>
-    post(`/api/admin/appeals/${id}/reject`, { admin_note }),
-  rejectReport: (id: number, admin_note: string) =>
-    post(`/api/admin/reports/${id}/reject`, { admin_note }),
-  removeEntry: (id: number) => post(`/api/admin/blacklist/${id}/delete`, {})
+  approveCorrection: (id: number, admin_note: string) =>
+    post(`/api/admin/corrections/${id}/approve`, { admin_note }),
+  approveSubmission: (id: number, admin_note: string, malware_category: string) =>
+    post(`/api/admin/submissions/${id}/approve`, { admin_note, malware_category }),
+  rejectCorrection: (id: number, admin_note: string) =>
+    post(`/api/admin/corrections/${id}/reject`, { admin_note }),
+  rejectSubmission: (id: number, admin_note: string) =>
+    post(`/api/admin/submissions/${id}/reject`, { admin_note }),
+  removeEntry: (id: number) => post(`/api/admin/malware/${id}/delete`, {})
 }
 
 export const messageOf = (kind: FlashMessage['kind'], message: string): FlashMessage => ({

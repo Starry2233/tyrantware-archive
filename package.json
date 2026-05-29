@@ -1,14 +1,17 @@
 {
-  "name": "furry-blacklist-system",
+  "name": "tyrantware-archive",
   "private": true,
   "packageManager": "bun@1.3.14",
   "workspaces": ["apps/*", "packages/*"],
   "scripts": {
-    "dev:api": "bun run --filter @fbls/api dev",
-    "dev:public": "bun run --filter @fbls/public dev",
-    "dev:admin": "bun run --filter @fbls/admin dev",
-    "init:api": "bun run --filter @fbls/api schema",
+    "dev": "bun run dev:api & bun run dev:public & bun run dev:admin & wait",
+    "dev:api": "bun run --filter @tyrantware/api dev",
+    "dev:public": "bun run --filter @tyrantware/public dev",
+    "dev:admin": "bun run --filter @tyrantware/admin dev",
+    "dev:gh-pages": "bun run --filter @tyrantware/public dev:gh-pages",
+    "init:api": "bun run --filter @tyrantware/api schema",
     "build": "bun run --workspaces build",
+    "build:gh-pages": "bun run --filter @tyrantware/public build:gh-pages",
     "check": "bun run --workspaces check"
   }
 }

@@ -1,5 +1,5 @@
 import { StatusCode } from '@mateothegreat/svelte5-router'
-import NotFound from '@fbls/shared/NotFound.svelte'
+import NotFound from '@tyrantware/shared/NotFound.svelte'
 
 export const routes = [
   { component: async () => import('./pages/Login.svelte') },

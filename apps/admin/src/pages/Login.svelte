@@ -28,14 +28,14 @@ const submit = async (event: SubmitEvent) => {
 </script>
 
 <svelte:head>
-  <title>后台登录 - 黑名单系统</title>
+  <title>后台登录 - Tyrantware Archive</title>
 </svelte:head>
 
 <main class="login-layout">
   <section class="login-panel dossier">
-    <span class="eyebrow">后台审核端</span>
+    <span class="eyebrow">Admin Panel</span>
     <h1>管理员登录</h1>
-    <p>登录后可以审核举报、审核申诉，并维护针对极端福瑞/反福瑞行为的在案记录。</p>
+    <p>登录后可以审核恶意软件提交、审核更正请求，并维护专有恶意软件档案库记录。</p>
     <p class="field-hint">当前设备登录成功后，10 分钟内无需再次输入账号和密码。</p>
     <form class="form-panel compact" onsubmit={submit}>
       <label>账号

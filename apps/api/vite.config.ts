@@ -6,7 +6,7 @@ export default defineConfig({
     build({
       entry: './src/index.ts',
       vercel: {
-        name: 'api',
+        name: 'tyrantware-api',
         routes: [{ src: '^/(?:api(?:/.*)?)?$' }]
       }
     })

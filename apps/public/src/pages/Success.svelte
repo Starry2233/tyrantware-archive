@@ -1,20 +1,22 @@
 <script lang="ts">
 import { route } from '@mateothegreat/svelte5-router'
 
-const submissionType =
-  typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('type') === 'appeal'
-    ? 'appeal'
-    : 'report'
+const params =
+  typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams()
+const type = params.get('type')
 
-const title = submissionType === 'appeal' ? '申诉提交成功' : '举报提交成功'
+const isCorrection = type === 'correction'
+const isSubmission = type === 'submission'
+
+const title = isCorrection ? '更正请求提交成功' : '证据提交成功'
 const detail =
-  submissionType === 'appeal'
-    ? '你的申诉材料已经提交成功，当前正在等待管理员审核，请留意后续处理结果。'
-    : '你的举报材料已经提交成功，当前正在等待管理员审核，请留意后续处理结果。'
+  isCorrection
+    ? '你的更正请求已经提交成功，当前正在等待管理员审核，请留意后续处理结果。'
+    : '你的恶意软件证据已经提交成功，当前正在等待管理员审核，请留意后续处理结果。'
 </script>
 
 <svelte:head>
-  <title>{title} - 福瑞联合净网行动</title>
+  <title>{title} - Tyrantware Archive</title>
 </svelte:head>
 
 <main class="single-panel">

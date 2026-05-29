@@ -1,63 +1,57 @@
-# 极端福瑞/反福瑞行为档案库 API
+# Tyrantware Archive API
 
-本文档说明黑名单查询接口的调用方法。
+本文档说明恶意软件档案库查询接口的调用方法。
 
 ## 接口地址
 
 ```text
-GET /api/blacklist/search
-POST /api/blacklist/search
+GET /api/search
+POST /api/search
 ```
 
 ```text
-https://furry.report/api/blacklist/search
+https://tyrantware-archive.example.com/api/search
 ```
-
-## 校验规则
-
-调用查询接口时，必须提供 `check_code` 参数。
-
-- `check_code` 必须是数字
-- `check_code` 必须与后端环境变量 `CHECK_CODE` 完全一致
-- 不一致时接口会返回错误，无法查询
 
 ## 请求参数
 
-### 通用参数
-
 | 参数名 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `platform` | string | 是 | 平台名称 |
-| `account_id` | string | 是 | 账号名或账号 ID |
-| `check_code` | string | 是 | 查询校验码，必须与后端环境变量 `CHECK_CODE` 一致 |
+| `vendor` | string | 是 | 软件厂商名称 |
+| `software_name` | string | 是 | 软件名称 |
 
-### `platform` 可选值
+### `vendor` 可选值
 
-- `QQ`
-- `微信`
-- `B站`
-- `快手`
-- `抖音`
-- `Discord`
+- `微软`
+- `苹果`
+- `谷歌`
+- `Adobe`
+- `亚马逊`
+- `Meta`
+- `惠普`
+- `三星`
+- `特斯拉`
+- `索尼`
+- `任天堂`
+- `高通`
 
 ## GET 调用示例
 
 ### curl
 
 ```bash
-curl "https://your-domain.com/api/blacklist/search?platform=QQ&account_id=user_12345&check_code=123456"
+curl "https://your-domain.com/api/search?vendor=微软&software_name=Windows%2011"
 ```
 
 ### JavaScript
 
 ```js
 const params = new URLSearchParams({
-  platform: 'QQ',
-  account_id: 'user_12345',
-  check_code: '123456'
+  vendor: '微软',
+  software_name: 'Windows 11'
 })
 
-const response = await fetch(`https://your-domain.com/api/blacklist/search?${params}`, {
+const response = await fetch(`https://your-domain.com/api/search?${params}`, {
   headers: { Accept: 'application/json' }
 })
 
@@ -70,28 +64,26 @@ console.log(data)
 ### curl
 
 ```bash
-curl -X POST "https://furry.report/api/blacklist/search" \
+curl -X POST "https://your-domain.com/api/search" \
   -H "Content-Type: application/json" \
   -d '{
-    "platform": "QQ",
-    "account_id": "user_12345",
-    "check_code": "123456"
+    "vendor": "微软",
+    "software_name": "Windows 11"
   }'
 ```
 
 ### JavaScript
 
 ```js
-const response = await fetch('https://your-domain.com/api/blacklist/search', {
+const response = await fetch('https://your-domain.com/api/search', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json'
   },
   body: JSON.stringify({
-    platform: 'QQ',
-    account_id: 'user_12345',
-    check_code: '123456'
+    vendor: '微软',
+    software_name: 'Windows 11'
   })
 })
 
@@ -101,22 +93,23 @@ console.log(data)
 
 ## 成功响应示例
 
-### 命中黑名单
+### 已记录在案
 
 ```json
 {
   "success": true,
   "found": true,
   "query": {
-    "platform": "QQ",
-    "account_id": "user_12345"
+    "vendor": "微软",
+    "software_name": "Windows 11"
   },
   "entry": {
     "id": 1,
-    "platform": "QQ",
-    "account_id": "user_12345",
-    "threat_level": "高",
+    "vendor": "微软",
+    "software_name": "Windows 11",
+    "malware_category": "监视",
     "description": "示例描述",
+    "evidence_urls": "https://example.com/source",
     "created_at": "2026-05-26 12:00:00",
     "updated_at": "2026-05-26 12:30:00",
     "images": [
@@ -131,15 +124,15 @@ console.log(data)
 }
 ```
 
-### 未命中黑名单
+### 未收录
 
 ```json
 {
   "success": true,
   "found": false,
   "query": {
-    "platform": "QQ",
-    "account_id": "user_12345"
+    "vendor": "微软",
+    "software_name": "Windows 11"
   },
   "entry": null
 }
@@ -147,22 +140,18 @@ console.log(data)
 
 ## 失败响应示例
 
-### 校验码错误
-
 ```json
 {
   "success": false,
-  "error": "校验码错误。"
+  "error": "软件厂商选项无效。"
 }
 ```
 
-### 其他常见错误
+### 常见错误
 
-- `校验码不能为空。`
-- `校验码格式无效。`
-- `平台选项无效。`
-- `账号 ID 不能为空。`
-- `账号 ID 只能包含 ASCII 字符。`
+- `软件名称不能为空。`
+- `软件名称只能包含 ASCII 字符。`
+- `软件厂商选项无效。`
 - `请求过于频繁，请稍后再试。`
 
 ## 说明

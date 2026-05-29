@@ -1,4 +1,4 @@
-import type { FlashMessage } from '@fbls/shared'
+import type { FlashMessage } from '@tyrantware/shared'
 
 export const flash = $state<{ item: FlashMessage | null }>({ item: null })
 

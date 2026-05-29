@@ -1,20 +1,21 @@
 <script lang="ts">
 import { route } from '@mateothegreat/svelte5-router'
-import { clientLinks } from '@fbls/shared'
 </script>
 
 <svelte:head>
-  <title>极端福瑞/反福瑞档案库 - 福瑞联合净网行动</title>
+  <title>Tyrantware Archive - 专有恶意软件档案库</title>
 </svelte:head>
 
 <main class="hero hero-home">
   <section class="hero-copy dossier">
     <div class="hero-label-row">
-      <span class="eyebrow">公开登记与检索</span>
+      <span class="eyebrow">Proprietary Malware Archive</span>
     </div>
-    <h1>极端福瑞/反福瑞行为档案库</h1>
+    <h1>专有恶意软件档案库</h1>
     <p>
-      这里用于收集、核验和公开检索针对福瑞群体的极端骚扰、煽动、网暴与持续性敌意行为。所有举报和申诉都必须经过后台人工复核后才会生效。
+      本档案库收集、核验和公开检索专有软件中的恶意行为记录——包括监视、后门、DRM、欺诈、
+      强制捆绑、成瘾性设计等各类侵害用户权益的行为。所有提交都经过人工复核后才会生效。
+      本项目受 <a class="text-link" href="https://gnu.org/proprietary/" target="_blank" rel="noopener noreferrer">GNU 专有软件文档</a> 启发。
     </p>
     <div class="hero-metrics">
       <div>
@@ -29,44 +30,38 @@ import { clientLinks } from '@fbls/shared'
   </section>
 
   <section class="mission-strip">
-    <a class="mission-card" href="/report" use:route>
+    <a class="mission-card" href="/submit" use:route>
       <span class="mission-index">01</span>
-      <h2>举报入口</h2>
-      <p>提交平台、账号 ID、威胁程度、经过描述与证据材料，等待管理员审核。</p>
-      <span class="text-link">进入举报</span>
+      <h2>提交证据</h2>
+      <p>提交专有软件的恶意行为记录，包括厂商、软件名称、恶意行为类别、描述与证据来源，等待管理员审核。</p>
+      <span class="text-link">进入提交</span>
     </a>
     <a class="mission-card" href="/search" use:route>
       <span class="mission-index">02</span>
       <h2>公开查询</h2>
-      <p>按平台与账号检索，快速判断目标是否已经被审核记录在案。</p>
+      <p>按软件厂商与软件名称检索，快速确认某款软件是否已被记录在案。</p>
       <span class="text-link">进入查询</span>
     </a>
-    <a class="mission-card" href="/appeal" use:route>
+    <a class="mission-card" href="/correction" use:route>
       <span class="mission-index">03</span>
-      <h2>申诉复核</h2>
-      <p>若存在误收录，可提交申诉与补充证据，经复核后移出黑名单。</p>
-      <span class="text-link">进入申诉</span>
+      <h2>更正请求</h2>
+      <p>若档案库中存在错误记录，可提交更正请求与补充证据，经复核后处理。</p>
+      <span class="text-link">进入更正</span>
     </a>
   </section>
 
   <section class="home-bottom-grid">
     <article class="note-panel">
-      <span class="eyebrow">提交建议</span>
-      <h2>尽量提供可核验材料</h2>
-      <p>建议提交截图、原链接、聊天记录、时间线整理和账号主页信息。证据越完整，审核越快。</p>
+      <span class="eyebrow">行为分类</span>
+      <h2>覆盖的恶意行为类型</h2>
+      <p>监视 · 后门 · DRM · 诈骗 · 欺骗 · 强制 · 成瘾 · 审查 · 掩盖 · 不兼容 · 不安全 · 干扰 · 监狱 · 操纵 · 过时 · 破坏 · 订阅 · 束缚 · 独裁</p>
     </article>
     <article class="quote-panel">
-      <span class="eyebrow">站点立场</span>
+      <span class="eyebrow">本站立场</span>
       <p>
-        这不是情绪宣泄墙，而是用来记录针对福瑞群体的实际恶意行为的公开档案页。我们坚持用事实说话，保护公众安全。
+        专有软件（Proprietary Software）是指那些剥夺用户控制权的软件。
+        本档案库致力于记录这些软件侵害用户权益的行为，推动自由软件运动。
       </p>
     </article>
   </section>
-
-  <a class="archive-panel" href={clientLinks.apk}>
-    <span class="eyebrow">客户端</span>
-    <h2>下载手机客户端</h2>
-    <p>直接在手机上快速进行举报与筛选。</p>
-    <span class="text-link">立刻下载</span>
-  </a>
 </main>

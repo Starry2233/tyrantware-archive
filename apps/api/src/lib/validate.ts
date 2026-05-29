@@ -1,8 +1,8 @@
-import { imageTypes, platforms, threatLevels } from '@fbls/shared'
+import { malwareCategories, imageTypes } from '@tyrantware/shared'
 
-const maxAccount = 64
+const maxSoftwareName = 128
 const maxDescription = 2000
-const maxEvidence = 4000
+const maxEvidenceUrls = 4000
 const maxImageCount = 4
 const maxImageSize = 5 * 1024 * 1024
 
@@ -14,39 +14,31 @@ const base64Of = (bytes: Uint8Array) => {
   return btoa(text)
 }
 
-export const validatePlatform = (value: string) => {
+export const validateVendor = (value: string) => {
   const normalized = clean(value)
-  if (!platforms.includes(normalized as (typeof platforms)[number])) {
-    throw new Error('平台选项无效。')
+  if (!normalized) throw new Error('软件厂商不能为空。')
+  if (normalized.length > 64) {
+    throw new Error('软件厂商名称不能超过 64 个字符。')
   }
   return normalized
 }
 
-export const validateThreat = (value: string) => {
+export const validateMalwareCategory = (value: string) => {
   const normalized = clean(value)
-  if (!threatLevels.includes(normalized as (typeof threatLevels)[number])) {
-    throw new Error('威胁程度选项无效。')
+  if (!malwareCategories.includes(normalized as (typeof malwareCategories)[number])) {
+    throw new Error('恶意行为类别选项无效。')
   }
   return normalized
 }
 
-export const validateAccount = (value: string) => {
+export const validateSoftwareName = (value: string) => {
   const normalized = clean(value)
-  if (!normalized) throw new Error('账号 ID 不能为空。')
+  if (!normalized) throw new Error('软件名称不能为空。')
   if (!/^[\x00-\x7F]+$/.test(normalized)) {
-    throw new Error('账号 ID 只能包含 ASCII 字符。')
+    throw new Error('软件名称只能包含 ASCII 字符。')
   }
-  if (normalized.length > maxAccount) {
-    throw new Error(`账号 ID 不能超过 ${maxAccount} 个字符。`)
-  }
-  return normalized
-}
-
-export const validateCheckCode = (value: string) => {
-  const normalized = clean(value)
-  if (!normalized) throw new Error('校验码不能为空。')
-  if (!/^\d+$/.test(normalized)) {
-    throw new Error('校验码格式无效。')
+  if (normalized.length > maxSoftwareName) {
+    throw new Error(`软件名称不能超过 ${maxSoftwareName} 个字符。`)
   }
   return normalized
 }
@@ -60,18 +52,18 @@ export const validateDescription = (value: string) => {
   return normalized
 }
 
-export const validateEvidence = (value: string) => {
+export const validateEvidenceUrls = (value: string) => {
   const normalized = value.trim()
-  if (!normalized) throw new Error('证据不能为空。')
-  if (normalized.length > maxEvidence) {
-    throw new Error(`证据不能超过 ${maxEvidence} 个字符。`)
+  if (!normalized) throw new Error('证据来源不能为空。')
+  if (normalized.length > maxEvidenceUrls) {
+    throw new Error(`证据来源不能超过 ${maxEvidenceUrls} 个字符。`)
   }
   return normalized
 }
 
 export const validateAgreement = (value: string | null) => {
   if (value !== 'yes') {
-    throw new Error('请先阅读并同意《极端福瑞/反福瑞行为档案库许可协议》。')
+    throw new Error('请先阅读并同意《专有恶意软件档案库贡献协议》。')
   }
 }
 

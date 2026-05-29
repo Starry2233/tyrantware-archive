@@ -3,7 +3,7 @@ import { onMount } from 'svelte'
 import { adminApi, messageOf } from '../lib/api'
 import { isAuthed, setAuth } from '../lib/auth.svelte'
 import { setFlash } from '../lib/state.svelte'
-import { threatLevels, type DashboardPayload } from '@fbls/shared'
+import { malwareCategories, type DashboardPayload } from '@tyrantware/shared'
 
 let data = $state<DashboardPayload | null>(null)
 let loading = $state(true)
@@ -48,7 +48,7 @@ onMount(() => {
 </script>
 
 <svelte:head>
-  <title>后台管理 - 黑名单系统</title>
+  <title>后台管理 - Tyrantware Archive</title>
 </svelte:head>
 
 {#if loading}
@@ -62,7 +62,7 @@ onMount(() => {
         <span class="eyebrow">审核与档案维护</span>
         <h1>后台管理页</h1>
         <p class="header-copy">
-          这里处理举报、申诉与黑名单档案。通过审核后，记录会自动增删，不需要手动同步。
+          这里处理恶意软件提交、更正请求与档案记录。通过审核后，记录会自动增删，不需要手动同步。
         </p>
       </div>
       <div class="admin-controls">
@@ -72,24 +72,24 @@ onMount(() => {
 
     <section class="admin-section">
       <div class="section-title">
-        <h2>待审核举报</h2>
-        <span>{data.reports.length} 条</span>
+        <h2>待审核提交</h2>
+        <span>{data.submissions.length} 条</span>
       </div>
-      {#if data.reports.length}
+      {#if data.submissions.length}
         <div class="review-grid">
-          {#each data.reports as report}
+          {#each data.submissions as submission}
             <article class="review-card">
-              <h3>#{report.id} {report.platform} / {report.account_id}</h3>
+              <h3>#{submission.id} {submission.vendor} / {submission.software_name}</h3>
               <div class="meta-strip">
-                <span class="badge badge-danger">{report.threat_level}</span>
-                <span>{report.created_at}</span>
+                <span class="badge badge-danger">{submission.malware_category}</span>
+                <span>{submission.created_at}</span>
               </div>
-              <p><strong>威胁程度：</strong>{report.threat_level}</p>
-              <p><strong>描述：</strong>{report.description}</p>
-              <p><strong>证据：</strong>{report.evidence}</p>
-              {#if report.images.length}
+              <p><strong>恶意行为类别：</strong>{submission.malware_category}</p>
+              <p><strong>描述：</strong>{submission.description}</p>
+              <p><strong>证据来源：</strong>{submission.evidence_urls}</p>
+              {#if submission.images.length}
                 <div class="evidence-gallery">
-                  {#each report.images as image}
+                  {#each submission.images as image}
                     <a class="evidence-thumb" href={image.url} target="_blank" rel="noopener noreferrer">
                       <img src={image.url} alt={image.filename} />
                       <span>{image.filename}</span>
@@ -98,122 +98,122 @@ onMount(() => {
                 </div>
               {/if}
               <label>
-                最终威胁程度
-                <select name="threat_level" required form={`approve-report-${report.id}`}>
-                  {#each threatLevels as level}
-                    <option value={level} selected={level === report.threat_level}>{level}</option>
+                恶意行为类别
+                <select name="malware_category" required form={`approve-submission-${submission.id}`}>
+                  {#each malwareCategories as category}
+                    <option value={category} selected={category === submission.malware_category}>{category}</option>
                   {/each}
                 </select>
               </label>
               <div class="action-row">
                 <form
-                  id={`approve-report-${report.id}`}
+                  id={`approve-submission-${submission.id}`}
                   onsubmit={(event) => {
                     event.preventDefault()
                     const form = new FormData(event.currentTarget as HTMLFormElement)
                     run(
-                      adminApi.approveReport(
-                        report.id,
+                      adminApi.approveSubmission(
+                        submission.id,
                         String(form.get('admin_note') || ''),
-                        String(form.get('threat_level') || '')
+                        String(form.get('malware_category') || '')
                       )
                     )
                   }}
                 >
                   <textarea name="admin_note" rows="2" placeholder="审核备注（可选）"></textarea>
-                  <button class="primary-button" type="submit">通过并加入黑名单</button>
+                  <button class="primary-button" type="submit">通过并加入档案库</button>
                 </form>
                 <form
                   onsubmit={(event) => {
                     event.preventDefault()
                     const form = new FormData(event.currentTarget as HTMLFormElement)
-                    run(adminApi.rejectReport(report.id, String(form.get('admin_note') || '')))
+                    run(adminApi.rejectSubmission(submission.id, String(form.get('admin_note') || '')))
                   }}
                 >
                   <textarea name="admin_note" rows="2" placeholder="驳回原因（可选）"></textarea>
-                  <button class="danger-button" type="submit">驳回举报</button>
+                  <button class="danger-button" type="submit">驳回</button>
                 </form>
               </div>
             </article>
           {/each}
         </div>
       {:else}
-        <div class="empty-state">当前没有待审核举报。</div>
+        <div class="empty-state">当前没有待审核提交。</div>
       {/if}
     </section>
 
     <section class="admin-section">
       <div class="section-title">
-        <h2>待审核申诉</h2>
-        <span>{data.appeals.length} 条</span>
+        <h2>待审核更正请求</h2>
+        <span>{data.corrections.length} 条</span>
       </div>
-      {#if data.appeals.length}
+      {#if data.corrections.length}
         <div class="review-grid">
-          {#each data.appeals as appeal}
+          {#each data.corrections as correction}
             <article class="review-card">
-              <h3>#{appeal.id} {appeal.platform} / {appeal.account_id}</h3>
+              <h3>#{correction.id} {correction.vendor} / {correction.software_name}</h3>
               <div class="meta-strip">
-                <span class="badge">申诉</span>
-                <span>{appeal.created_at}</span>
+                <span class="badge">更正请求</span>
+                <span>{correction.created_at}</span>
               </div>
-              <p><strong>描述：</strong>{appeal.description}</p>
-              <p><strong>证据：</strong>{appeal.evidence}</p>
+              <p><strong>说明：</strong>{correction.description}</p>
+              <p><strong>证据来源：</strong>{correction.evidence_urls}</p>
               <div class="action-row">
                 <form
                   onsubmit={(event) => {
                     event.preventDefault()
                     const form = new FormData(event.currentTarget as HTMLFormElement)
-                    run(adminApi.approveAppeal(appeal.id, String(form.get('admin_note') || '')))
+                    run(adminApi.approveCorrection(correction.id, String(form.get('admin_note') || '')))
                   }}
                 >
                   <textarea name="admin_note" rows="2" placeholder="审核备注（可选）"></textarea>
-                  <button class="primary-button" type="submit">通过并移出黑名单</button>
+                  <button class="primary-button" type="submit">通过并移出档案库</button>
                 </form>
                 <form
                   onsubmit={(event) => {
                     event.preventDefault()
                     const form = new FormData(event.currentTarget as HTMLFormElement)
-                    run(adminApi.rejectAppeal(appeal.id, String(form.get('admin_note') || '')))
+                    run(adminApi.rejectCorrection(correction.id, String(form.get('admin_note') || '')))
                   }}
                 >
                   <textarea name="admin_note" rows="2" placeholder="驳回原因（可选）"></textarea>
-                  <button class="danger-button" type="submit">驳回申诉</button>
+                  <button class="danger-button" type="submit">驳回</button>
                 </form>
               </div>
             </article>
           {/each}
         </div>
       {:else}
-        <div class="empty-state">当前没有待审核申诉。</div>
+        <div class="empty-state">当前没有待审核更正请求。</div>
       {/if}
     </section>
 
     <section class="admin-section">
       <div class="section-title">
-        <h2>当前黑名单</h2>
-        <span>{data.blacklistEntries.length} 条</span>
+        <h2>当前档案库</h2>
+        <span>{data.malwareEntries.length} 条</span>
       </div>
-      {#if data.blacklistEntries.length}
+      {#if data.malwareEntries.length}
         <div class="table-wrap">
           <table>
             <thead>
               <tr>
                 <th>ID</th>
-                <th>平台</th>
-                <th>账号 ID</th>
-                <th>威胁程度</th>
+                <th>厂商</th>
+                <th>软件名称</th>
+                <th>恶意行为类别</th>
                 <th>描述</th>
                 <th>更新时间</th>
                 <th>操作</th>
               </tr>
             </thead>
             <tbody>
-              {#each data.blacklistEntries as entry}
+              {#each data.malwareEntries as entry}
                 <tr>
                   <td>{entry.id}</td>
-                  <td>{entry.platform}</td>
-                  <td>{entry.account_id}</td>
-                  <td>{entry.threat_level}</td>
+                  <td>{entry.vendor}</td>
+                  <td>{entry.software_name}</td>
+                  <td>{entry.malware_category}</td>
                   <td>
                     <div>{entry.description}</div>
                     {#if entry.images.length}
@@ -238,7 +238,7 @@ onMount(() => {
                       class="table-action-form"
                       onsubmit={(event) => {
                         event.preventDefault()
-                        if (confirm('确认删除这条已过审黑名单记录吗？')) {
+                        if (confirm('确认删除这条档案记录吗？')) {
                           run(adminApi.removeEntry(entry.id))
                         }
                       }}
@@ -252,7 +252,7 @@ onMount(() => {
           </table>
         </div>
       {:else}
-        <div class="empty-state">黑名单当前为空。</div>
+        <div class="empty-state">档案库当前为空。</div>
       {/if}
     </section>
   </main>

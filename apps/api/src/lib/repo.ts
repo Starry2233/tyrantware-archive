@@ -1,12 +1,12 @@
 import { and, asc, desc, eq, sql } from 'drizzle-orm'
-import type { BlacklistEntry, PendingAppeal, PendingReport } from '@fbls/shared'
+import type { MalwareEntry, PendingCorrection, PendingSubmission } from '@tyrantware/shared'
 import {
-  appeals,
-  blacklistEntries,
-  blacklistEntryImages,
-  reportTraces,
-  reportImages,
-  reports
+  corrections,
+  malwareEntries,
+  malwareEntryImages,
+  submissionTraces,
+  submissionImages,
+  submissions
 } from './schema'
 import { getDb } from './db'
 
@@ -33,69 +33,70 @@ type EntryImageRow = {
   imageData: string
 }
 
-type ReportRow = {
+type SubmissionRow = {
   id: number
-  platform: string
-  accountId: string
-  threatLevel: string
+  vendor: string
+  softwareName: string
+  malwareCategory: string
   description: string
-  evidence: string
+  evidenceUrls: string
   status: string
   adminNote: string
   createdAt: string
   updatedAt: string
 }
 
-type AppealRow = {
+type CorrectionRow = {
   id: number
-  platform: string
-  accountId: string
+  vendor: string
+  softwareName: string
   description: string
-  evidence: string
+  evidenceUrls: string
   status: string
   adminNote: string
   createdAt: string
   updatedAt: string
 }
 
-type BlacklistRow = {
+type MalwareRow = {
   id: number
-  platform: string
-  accountId: string
-  threatLevel: string
+  vendor: string
+  softwareName: string
+  malwareCategory: string
   description: string
+  evidenceUrls: string
   createdAt: string
   updatedAt: string
 }
 
-export const createReport = async (
+export const createSubmission = async (
   payload: {
-    accountId: string
+    vendor: string
+    softwareName: string
+    malwareCategory: string
     description: string
-    evidence: string
+    evidenceUrls: string
     images: ImageInput[]
-    platform: string
-    threatLevel: string
   }
 ) => {
   const db = await getDb()
   const result = await db
-    .insert(reports)
+    .insert(submissions)
     .values({
-      accountId: payload.accountId,
+      vendor: payload.vendor,
+      softwareName: payload.softwareName,
+      malwareCategory: payload.malwareCategory,
       description: payload.description,
-      evidence: payload.evidence,
-      platform: payload.platform,
-      threatLevel: payload.threatLevel
+      evidenceUrls: payload.evidenceUrls
     })
-    .returning({ id: reports.id })
+    .returning({ id: submissions.id })
 
   const id = result[0]?.id
-  if (!id) throw new Error('举报创建失败。')
+  if (!id) throw new Error('提交创建失败。')
   if (payload.images.length) {
-    await db.insert(reportImages).values(
+    await db.insert(submissionImages).values(
       payload.images.map((image) => ({
-        reportId: id,
+        submissionId: id,
         mimeType: image.mimeType,
         filename: image.filename,
         imageData: image.imageData
@@ -105,53 +106,53 @@ export const createReport = async (
   return id
 }
 
-export const deleteReport = async (id: number) => {
+export const deleteSubmission = async (id: number) => {
   const db = await getDb()
-  await db.delete(reportImages).where(eq(reportImages.reportId, id))
-  await db.delete(reportTraces).where(eq(reportTraces.reportId, id))
-  await db.delete(reports).where(eq(reports.id, id))
+  await db.delete(submissionImages).where(eq(submissionImages.submissionId, id))
+  await db.delete(submissionTraces).where(eq(submissionTraces.submissionId, id))
+  await db.delete(submissions).where(eq(submissions.id, id))
 }
 
-export const createAppeal = async (
+export const createCorrection = async (
   payload: {
-    accountId: string
+    vendor: string
+    softwareName: string
     description: string
-    evidence: string
-    platform: string
+    evidenceUrls: string
   }
 ) => {
   const db = await getDb()
   const hit = await db
-    .select({ id: blacklistEntries.id })
-    .from(blacklistEntries)
+    .select({ id: malwareEntries.id })
+    .from(malwareEntries)
     .where(
       and(
-        sql`lower(${blacklistEntries.platform}) = lower(${payload.platform})`,
-        sql`lower(${blacklistEntries.accountId}) = lower(${payload.accountId})`
+        sql`lower(${malwareEntries.vendor}) = lower(${payload.vendor})`,
+        sql`lower(${malwareEntries.softwareName}) = lower(${payload.softwareName})`
       )
     )
     .limit(1)
 
   if (!hit.length) {
-    throw new Error('该平台下的账号 ID 不在黑名单中，不能提交申诉。')
+    throw new Error('该厂商下的软件名称不在档案库中，不能提交更正请求。')
   }
 
-  await db.insert(appeals).values(payload)
+  await db.insert(corrections).values(payload)
 }
 
-export const searchBlacklist = async (
+export const searchMalware = async (
   base: string,
-  platform: string,
-  accountId: string
-): Promise<BlacklistEntry | null> => {
+  vendor: string,
+  softwareName: string
+): Promise<MalwareEntry | null> => {
   const db = await getDb()
   const rows = await db
     .select()
-    .from(blacklistEntries)
+    .from(malwareEntries)
     .where(
       and(
-        sql`lower(${blacklistEntries.platform}) = lower(${platform})`,
-        sql`lower(${blacklistEntries.accountId}) = lower(${accountId})`
+        sql`lower(${malwareEntries.vendor}) = lower(${vendor})`,
+        sql`lower(${malwareEntries.softwareName}) = lower(${softwareName})`
       )
     )
     .limit(1)
@@ -160,45 +161,46 @@ export const searchBlacklist = async (
   if (!row) return null
   const images = await db
     .select()
-    .from(blacklistEntryImages)
-    .where(eq(blacklistEntryImages.blacklistEntryId, row.id))
-    .orderBy(asc(blacklistEntryImages.id))
+    .from(malwareEntryImages)
+    .where(eq(malwareEntryImages.malwareEntryId, row.id))
+    .orderBy(asc(malwareEntryImages.id))
 
   return {
     id: row.id,
-    platform: row.platform,
-    account_id: row.accountId,
-    threat_level: row.threatLevel,
+    vendor: row.vendor,
+    software_name: row.softwareName,
+    malware_category: row.malwareCategory,
     description: row.description,
+    evidence_urls: row.evidenceUrls,
     created_at: row.createdAt,
     updated_at: row.updatedAt,
     images: images.map((image: EntryImageRow) => withUrl(base, image))
   }
 }
 
-export const listPendingReports = async (): Promise<PendingReport[]> => {
+export const listPendingSubmissions = async (): Promise<PendingSubmission[]> => {
   const db = await getDb()
   const rows = await db
     .select()
-    .from(reports)
-    .where(eq(reports.status, 'pending'))
-    .orderBy(asc(reports.createdAt), asc(reports.id))
+    .from(submissions)
+    .where(eq(submissions.status, 'pending'))
+    .orderBy(asc(submissions.createdAt), asc(submissions.id))
 
   return Promise.all(
-    rows.map(async (row: ReportRow) => {
+    rows.map(async (row: SubmissionRow) => {
       const images = await db
         .select()
-        .from(reportImages)
-        .where(eq(reportImages.reportId, row.id))
-        .orderBy(asc(reportImages.id))
+        .from(submissionImages)
+        .where(eq(submissionImages.submissionId, row.id))
+        .orderBy(asc(submissionImages.id))
 
       return {
         id: row.id,
-        platform: row.platform,
-        account_id: row.accountId,
-        threat_level: row.threatLevel,
+        vendor: row.vendor,
+        software_name: row.softwareName,
+        malware_category: row.malwareCategory,
         description: row.description,
-        evidence: row.evidence,
+        evidence_urls: row.evidenceUrls,
         status: row.status,
         admin_note: row.adminNote,
         created_at: row.createdAt,
@@ -214,20 +216,20 @@ export const listPendingReports = async (): Promise<PendingReport[]> => {
   )
 }
 
-export const listPendingAppeals = async (): Promise<PendingAppeal[]> => {
+export const listPendingCorrections = async (): Promise<PendingCorrection[]> => {
   const db = await getDb()
   const rows = await db
     .select()
-    .from(appeals)
-    .where(eq(appeals.status, 'pending'))
-    .orderBy(asc(appeals.createdAt), asc(appeals.id))
+    .from(corrections)
+    .where(eq(corrections.status, 'pending'))
+    .orderBy(asc(corrections.createdAt), asc(corrections.id))
 
-  return rows.map((row: AppealRow) => ({
+  return rows.map((row: CorrectionRow) => ({
     id: row.id,
-    platform: row.platform,
-    account_id: row.accountId,
+    vendor: row.vendor,
+    software_name: row.softwareName,
     description: row.description,
-    evidence: row.evidence,
+    evidence_urls: row.evidenceUrls,
     status: row.status,
     admin_note: row.adminNote,
     created_at: row.createdAt,
@@ -235,27 +237,28 @@ export const listPendingAppeals = async (): Promise<PendingAppeal[]> => {
   }))
 }
 
-export const listBlacklistEntries = async (): Promise<BlacklistEntry[]> => {
+export const listMalwareEntries = async (): Promise<MalwareEntry[]> => {
   const db = await getDb()
   const rows = await db
     .select()
-    .from(blacklistEntries)
-    .orderBy(desc(blacklistEntries.updatedAt), desc(blacklistEntries.id))
+    .from(malwareEntries)
+    .orderBy(desc(malwareEntries.updatedAt), desc(malwareEntries.id))
 
   return Promise.all(
-    rows.map(async (row: BlacklistRow) => {
+    rows.map(async (row: MalwareRow) => {
       const images = await db
         .select()
-        .from(blacklistEntryImages)
-        .where(eq(blacklistEntryImages.blacklistEntryId, row.id))
-        .orderBy(asc(blacklistEntryImages.id))
+        .from(malwareEntryImages)
+        .where(eq(malwareEntryImages.malwareEntryId, row.id))
+        .orderBy(asc(malwareEntryImages.id))
 
       return {
         id: row.id,
-        platform: row.platform,
-        account_id: row.accountId,
-        threat_level: row.threatLevel,
+        vendor: row.vendor,
+        software_name: row.softwareName,
+        malware_category: row.malwareCategory,
         description: row.description,
+        evidence_urls: row.evidenceUrls,
         created_at: row.createdAt,
         updated_at: row.updatedAt,
         images: images.map((image: EntryImageRow) => ({
@@ -269,34 +272,34 @@ export const listBlacklistEntries = async (): Promise<BlacklistEntry[]> => {
   )
 }
 
-export const approveReport = async (
+export const approveSubmission = async (
   id: number,
   adminNote: string,
-  threatLevel: string
+  malwareCategory: string
 ) => {
   const db = await getDb()
   const rows = await db
     .select()
-    .from(reports)
-    .where(and(eq(reports.id, id), eq(reports.status, 'pending')))
+    .from(submissions)
+    .where(and(eq(submissions.id, id), eq(submissions.status, 'pending')))
     .limit(1)
 
-  const report = rows[0]
-  if (!report) return false
+  const submission = rows[0]
+  if (!submission) return false
 
   const images = await db
     .select()
-    .from(reportImages)
-    .where(eq(reportImages.reportId, id))
-    .orderBy(asc(reportImages.id))
+    .from(submissionImages)
+    .where(eq(submissionImages.submissionId, id))
+    .orderBy(asc(submissionImages.id))
 
   const existing = await db
-    .select({ id: blacklistEntries.id })
-    .from(blacklistEntries)
+    .select({ id: malwareEntries.id })
+    .from(malwareEntries)
     .where(
       and(
-        sql`lower(${blacklistEntries.platform}) = lower(${report.platform})`,
-        sql`lower(${blacklistEntries.accountId}) = lower(${report.accountId})`
+        sql`lower(${malwareEntries.vendor}) = lower(${submission.vendor})`,
+        sql`lower(${malwareEntries.softwareName}) = lower(${submission.softwareName})`
       )
     )
     .limit(1)
@@ -305,38 +308,40 @@ export const approveReport = async (
 
   if (entryId) {
     await db
-      .update(blacklistEntries)
+      .update(malwareEntries)
       .set({
-        threatLevel,
-        description: report.description,
-        sourceReportId: report.id,
+        malwareCategory,
+        description: submission.description,
+        evidenceUrls: submission.evidenceUrls,
+        sourceSubmissionId: submission.id,
         updatedAt: sql`CURRENT_TIMESTAMP`
       })
-      .where(eq(blacklistEntries.id, entryId))
+      .where(eq(malwareEntries.id, entryId))
   } else {
     const created = await db
-      .insert(blacklistEntries)
+      .insert(malwareEntries)
       .values({
-        platform: report.platform,
-        accountId: report.accountId,
-        threatLevel,
-        description: report.description,
-        sourceReportId: report.id
+        vendor: submission.vendor,
+        softwareName: submission.softwareName,
+        malwareCategory,
+        description: submission.description,
+        evidenceUrls: submission.evidenceUrls,
+        sourceSubmissionId: submission.id
       })
-      .returning({ id: blacklistEntries.id })
+      .returning({ id: malwareEntries.id })
     entryId = created[0]?.id
   }
 
   if (!entryId) return false
 
   await db
-    .delete(blacklistEntryImages)
-    .where(eq(blacklistEntryImages.blacklistEntryId, entryId))
+    .delete(malwareEntryImages)
+    .where(eq(malwareEntryImages.malwareEntryId, entryId))
 
   if (images.length) {
-    await db.insert(blacklistEntryImages).values(
+    await db.insert(malwareEntryImages).values(
       images.map((image: EntryImageRow) => ({
-        blacklistEntryId: entryId!,
+        malwareEntryId: entryId!,
         mimeType: image.mimeType,
         filename: image.filename,
         imageData: image.imageData
@@ -345,135 +350,135 @@ export const approveReport = async (
   }
 
   await db
-    .update(reports)
+    .update(submissions)
     .set({
       status: 'approved',
       adminNote: adminNote.trim(),
       updatedAt: sql`CURRENT_TIMESTAMP`
     })
-    .where(eq(reports.id, id))
+    .where(eq(submissions.id, id))
 
   return true
 }
 
-export const rejectReport = async (id: number, adminNote: string) => {
+export const rejectSubmission = async (id: number, adminNote: string) => {
   const db = await getDb()
   const result = await db
-    .update(reports)
+    .update(submissions)
     .set({
       status: 'rejected',
       adminNote: adminNote.trim(),
       updatedAt: sql`CURRENT_TIMESTAMP`
     })
-    .where(and(eq(reports.id, id), eq(reports.status, 'pending')))
-    .returning({ id: reports.id })
+    .where(and(eq(submissions.id, id), eq(submissions.status, 'pending')))
+    .returning({ id: submissions.id })
 
   return Boolean(result[0]?.id)
 }
 
-export const approveAppeal = async (id: number, adminNote: string) => {
+export const approveCorrection = async (id: number, adminNote: string) => {
   const db = await getDb()
   const rows = await db
     .select()
-    .from(appeals)
-    .where(and(eq(appeals.id, id), eq(appeals.status, 'pending')))
+    .from(corrections)
+    .where(and(eq(corrections.id, id), eq(corrections.status, 'pending')))
     .limit(1)
 
-  const appeal = rows[0]
-  if (!appeal) return false
+  const correction = rows[0]
+  if (!correction) return false
 
   const hits = await db
-    .select({ id: blacklistEntries.id })
-    .from(blacklistEntries)
+    .select({ id: malwareEntries.id })
+    .from(malwareEntries)
     .where(
       and(
-        sql`lower(${blacklistEntries.platform}) = lower(${appeal.platform})`,
-        sql`lower(${blacklistEntries.accountId}) = lower(${appeal.accountId})`
+        sql`lower(${malwareEntries.vendor}) = lower(${correction.vendor})`,
+        sql`lower(${malwareEntries.softwareName}) = lower(${correction.softwareName})`
       )
     )
 
   for (const hit of hits) {
     await db
-      .delete(blacklistEntryImages)
-      .where(eq(blacklistEntryImages.blacklistEntryId, hit.id))
+      .delete(malwareEntryImages)
+      .where(eq(malwareEntryImages.malwareEntryId, hit.id))
   }
 
   await db
-    .delete(blacklistEntries)
+    .delete(malwareEntries)
     .where(
       and(
-        sql`lower(${blacklistEntries.platform}) = lower(${appeal.platform})`,
-        sql`lower(${blacklistEntries.accountId}) = lower(${appeal.accountId})`
+        sql`lower(${malwareEntries.vendor}) = lower(${correction.vendor})`,
+        sql`lower(${malwareEntries.softwareName}) = lower(${correction.softwareName})`
       )
     )
 
   await db
-    .update(appeals)
+    .update(corrections)
     .set({
       status: 'approved',
       adminNote: adminNote.trim(),
       updatedAt: sql`CURRENT_TIMESTAMP`
     })
-    .where(eq(appeals.id, id))
+    .where(eq(corrections.id, id))
 
   return true
 }
 
-export const rejectAppeal = async (id: number, adminNote: string) => {
+export const rejectCorrection = async (id: number, adminNote: string) => {
   const db = await getDb()
   const result = await db
-    .update(appeals)
+    .update(corrections)
     .set({
       status: 'rejected',
       adminNote: adminNote.trim(),
       updatedAt: sql`CURRENT_TIMESTAMP`
     })
-    .where(and(eq(appeals.id, id), eq(appeals.status, 'pending')))
-    .returning({ id: appeals.id })
+    .where(and(eq(corrections.id, id), eq(corrections.status, 'pending')))
+    .returning({ id: corrections.id })
 
   return Boolean(result[0]?.id)
 }
 
-export const deleteBlacklistEntry = async (id: number) => {
+export const deleteMalwareEntry = async (id: number) => {
   const db = await getDb()
   await db
-    .delete(blacklistEntryImages)
-    .where(eq(blacklistEntryImages.blacklistEntryId, id))
+    .delete(malwareEntryImages)
+    .where(eq(malwareEntryImages.malwareEntryId, id))
   const result = await db
-    .delete(blacklistEntries)
-    .where(eq(blacklistEntries.id, id))
-    .returning({ id: blacklistEntries.id })
+    .delete(malwareEntries)
+    .where(eq(malwareEntries.id, id))
+    .returning({ id: malwareEntries.id })
   return Boolean(result[0]?.id)
 }
 
-export const readReportImage = async (id: number) => {
+export const readSubmissionImage = async (id: number) => {
   const db = await getDb()
   const rows = await db
     .select({
-      id: reportImages.id,
-      filename: reportImages.filename,
-      mimeType: reportImages.mimeType,
-      imageData: reportImages.imageData
+      id: submissionImages.id,
+      filename: submissionImages.filename,
+      mimeType: submissionImages.mimeType,
+      imageData: submissionImages.imageData
     })
-    .from(reportImages)
-    .innerJoin(reports, eq(reports.id, reportImages.reportId))
-    .where(and(eq(reportImages.id, id), eq(reports.status, 'pending')))
+    .from(submissionImages)
+    .innerJoin(submissions, eq(submissions.id, submissionImages.submissionId))
+    .where(and(eq(submissionImages.id, id), eq(submissions.status, 'pending')))
     .limit(1)
 
   return rows[0] || null
 }
 
-export const readBlacklistImage = async (id: number) => {
+export const readMalwareImage = async (id: number) => {
   const db = await getDb()
   const rows = await db
     .select({
-      id: blacklistEntryImages.id,
-      filename: blacklistEntryImages.filename,
-      mimeType: blacklistEntryImages.mimeType,
-      imageData: blacklistEntryImages.imageData
+      id: malwareEntryImages.id,
+      filename: malwareEntryImages.filename,
+      mimeType: malwareEntryImages.mimeType,
+      imageData: malwareEntryImages.imageData
     })
-    .from(blacklistEntryImages)
-    .where(eq(blacklistEntryImages.id, id))
+    .from(malwareEntryImages)
+    .where(eq(malwareEntryImages.id, id))
     .limit(1)
 
   return rows[0] || null

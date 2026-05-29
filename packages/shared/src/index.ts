@@ -1,6 +1,16 @@
-export const platforms = ['QQ', '微信', 'B站', '快手', '抖音', 'Discord'] as const
+export const vendors = [
+  '微软', '苹果', '谷歌', 'Adobe', '亚马逊', 'Meta',
+  '惠普', '三星', '特斯拉', '索尼', '任天堂', '高通',
+  '腾讯', '阿里巴巴', '百度', '字节跳动', '华为', '小米',
+  '京东', '美团', '网易', '滴滴', '360', '中兴',
+  '联想', 'OPPO', 'vivo', '步步高', '小天才'
+] as const
 
-export const threatLevels = ['低', '中', '高', '严重'] as const
+export const malwareCategories = [
+  '监视', '后门', 'DRM', '诈骗', '欺骗', '强制',
+  '成瘾', '审查', '掩盖', '不兼容', '不安全', '干扰',
+  '监狱', '操纵', '过时', '破坏', '订阅', '束缚', '独裁'
+] as const
 
 export const imageTypes = [
   'image/jpeg',
@@ -10,30 +20,22 @@ export const imageTypes = [
 ] as const
 
 export const apiPaths = {
-  appeal: '/api/appeals',
-  adminBlacklist: '/api/admin/blacklist',
+  submission: '/api/submissions',
+  correction: '/api/corrections',
+  adminMalware: '/api/admin/malware',
   adminDashboard: '/api/admin/dashboard',
   adminLogin: '/api/admin/login',
   adminLogout: '/api/admin/logout',
   adminImages: '/api/admin',
-  report: '/api/reports',
-  search: '/api/blacklist/search'
+  search: '/api/search'
 } as const
 
-export const clientLinks = {
-  apk: 'https://gitee.com/GuoqiFish/xingji-interactive-software-download-item-storage/releases/download/20260519-1/aeab-release-1.0.0.apk',
-  docs: 'https://docs.xingjisoft.com/furries/AEAB_API.html',
-  eula: 'https://docs.xingjisoft.com/licenses/AEAB_EULA.html',
-  org: 'https://furries.com.cn',
-  team: 'https://www.xingjisoft.com'
-} as const
-
-export type Platform = (typeof platforms)[number]
-export type ThreatLevel = (typeof threatLevels)[number]
+export type Vendor = (typeof vendors)[number]
+export type MalwareCategory = (typeof malwareCategories)[number]
 
 export type SearchQuery = {
-  platform: string
-  account_id: string
+  vendor: string
+  software_name: string
 }
 
 export type ImageItem = {
@@ -43,12 +45,13 @@ export type ImageItem = {
   url: string
 }
 
-export type BlacklistEntry = {
+export type MalwareEntry = {
   id: number
-  platform: string
-  account_id: string
-  threat_level: string
+  vendor: string
+  software_name: string
+  malware_category: string
   description: string
+  evidence_urls: string
   created_at: string
   updated_at: string
   images: ImageItem[]
@@ -58,7 +61,7 @@ export type SearchPayload = {
   success: boolean
   found: boolean
   query: SearchQuery
-  entry: BlacklistEntry | null
+  entry: MalwareEntry | null
 }
 
 export type ApiError = {
@@ -66,33 +69,33 @@ export type ApiError = {
   error: string
 }
 
-export type ReportImage = {
+export type SubmissionImage = {
   id: number
   filename: string
   mime_type: string
   url: string
 }
 
-export type PendingReport = {
+export type PendingSubmission = {
   id: number
-  platform: string
-  account_id: string
-  threat_level: string
+  vendor: string
+  software_name: string
+  malware_category: string
   description: string
-  evidence: string
+  evidence_urls: string
   status: string
   admin_note: string
   created_at: string
   updated_at: string
-  images: ReportImage[]
+  images: SubmissionImage[]
 }
 
-export type PendingAppeal = {
+export type PendingCorrection = {
   id: number
-  platform: string
-  account_id: string
+  vendor: string
+  software_name: string
   description: string
-  evidence: string
+  evidence_urls: string
   status: string
   admin_note: string
   created_at: string
@@ -100,9 +103,9 @@ export type PendingAppeal = {
 }
 
 export type DashboardPayload = {
-  reports: PendingReport[]
-  appeals: PendingAppeal[]
-  blacklistEntries: BlacklistEntry[]
+  submissions: PendingSubmission[]
+  corrections: PendingCorrection[]
+  malwareEntries: MalwareEntry[]
 }
 
 export type AuthPayload = {

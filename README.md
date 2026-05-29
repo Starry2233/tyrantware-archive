@@ -1,6 +1,8 @@
-# FurryBlackListSystem
+# Tyrantware Archive
 
-福瑞联合净网行动，极端福瑞/反福瑞行为档案库。
+专有恶意软件档案库 — 收集、核验和公开检索专有软件中的恶意行为记录。
+
+本项目受 [GNU 专有软件文档](https://gnu.org/proprietary/) 启发，记录包括监视、后门、DRM、欺诈、强制捆绑、成瘾性设计等各类侵害用户权益的行为。
 
 ## 本地开发
 
@@ -12,9 +14,9 @@ bun install
 bun run init:api
 ```
 
-请在 `apps/api/.env` 中配置 `CHECK_CODE`，查询接口会要求调用方提供相同校验码。
+请在 `apps/api/.env` 中配置 `JWT_SECRET` 等必要环境变量。
 
-默认会准备 `apps/api/blacklist.db` 的数据库结构。
+默认会准备 `apps/api/tyrantware.db` 的数据库结构。
 
 ### 启动服务
 

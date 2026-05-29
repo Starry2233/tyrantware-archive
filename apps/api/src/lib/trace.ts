@@ -1,4 +1,4 @@
-import { reportTraces } from './schema'
+import { submissionTraces } from './schema'
 import { getDb } from './db'
 import { clientIpOf } from './rate'
 
@@ -31,28 +31,28 @@ const hashOf = async (base64: string) => {
 }
 
 export const buildTrace = async (
-  reportId: number,
+  submissionId: number,
   payload: {
-    accountId: string
+    vendor: string
+    softwareName: string
+    malwareCategory: string
     description: string
-    evidence: string
+    evidenceUrls: string
     images: { filename: string; imageData: string; mimeType: string }[]
-    platform: string
-    threatLevel: string
   },
   request: Request
 ) => {
   const now = new Date().toISOString()
   return JSON.stringify(
     {
-      report_id: reportId,
+      submission_id: submissionId,
       captured_at_utc: now,
-      report_summary: {
-        platform: payload.platform,
-        account_id: payload.accountId,
-        threat_level: payload.threatLevel,
+      submission_summary: {
+        vendor: payload.vendor,
+        software_name: payload.softwareName,
+        malware_category: payload.malwareCategory,
         description_length: payload.description.length,
-        evidence_length: payload.evidence.length
+        evidence_urls_length: payload.evidenceUrls.length
       },
       network: {
         client_ip: clientIpOf(request),
@@ -88,25 +88,25 @@ export const buildTrace = async (
 }
 
 export const writeTrace = async (
-  reportId: number,
+  submissionId: number,
   payload: {
-    accountId: string
+    vendor: string
+    softwareName: string
+    malwareCategory: string
     description: string
-    evidence: string
+    evidenceUrls: string
     images: { filename: string; imageData: string; mimeType: string }[]
-    platform: string
-    threatLevel: string
   },
   request: Request
 ) => {
   const db = await getDb()
-  await db.insert(reportTraces).values({
-    reportId,
-    payload: `${await buildTrace(reportId, payload, request)}\n`
+  await db.insert(submissionTraces).values({
+    submissionId,
+    payload: `${await buildTrace(submissionId, payload, request)}\n`
   })
 }
 
 export const listTraces = async () => {
   const db = await getDb()
-  return db.select().from(reportTraces)
+  return db.select().from(submissionTraces)
 }

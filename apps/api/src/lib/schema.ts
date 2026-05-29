@@ -3,95 +3,97 @@ import { index, integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqli
 
 const currentTimestamp = sql`CURRENT_TIMESTAMP`
 
-export const blacklistEntries = sqliteTable(
-  'blacklist_entries',
+export const malwareEntries = sqliteTable(
+  'malware_entries',
   {
     id: integer('id').primaryKey({ autoIncrement: true }),
-    platform: text('platform').notNull(),
-    accountId: text('account_id').notNull(),
-    threatLevel: text('threat_level').notNull(),
+    vendor: text('vendor').notNull(),
+    softwareName: text('software_name').notNull(),
+    malwareCategory: text('malware_category').notNull(),
     description: text('description').notNull(),
-    sourceReportId: integer('source_report_id'),
+    evidenceUrls: text('evidence_urls').notNull().default(''),
+    sourceSubmissionId: integer('source_submission_id'),
     createdAt: text('created_at').notNull().default(currentTimestamp),
     updatedAt: text('updated_at').notNull().default(currentTimestamp)
   },
   (table) => [
-    uniqueIndex('idx_blacklist_unique').on(table.platform, table.accountId),
-    index('idx_blacklist_lookup').on(table.platform, table.accountId),
-    index('idx_blacklist_updated').on(table.updatedAt, table.id)
+    uniqueIndex('idx_malware_unique').on(table.vendor, table.softwareName),
+    index('idx_malware_lookup').on(table.vendor, table.softwareName),
+    index('idx_malware_updated').on(table.updatedAt, table.id),
+    index('idx_malware_category').on(table.malwareCategory)
   ]
 )
 
-export const reports = sqliteTable(
-  'reports',
+export const submissions = sqliteTable(
+  'submissions',
   {
     id: integer('id').primaryKey({ autoIncrement: true }),
-    platform: text('platform').notNull(),
-    accountId: text('account_id').notNull(),
-    threatLevel: text('threat_level').notNull(),
+    vendor: text('vendor').notNull(),
+    softwareName: text('software_name').notNull(),
+    malwareCategory: text('malware_category').notNull(),
     description: text('description').notNull(),
-    evidence: text('evidence').notNull(),
+    evidenceUrls: text('evidence_urls').notNull().default(''),
     status: text('status').notNull().default('pending'),
     adminNote: text('admin_note').notNull().default(''),
     createdAt: text('created_at').notNull().default(currentTimestamp),
     updatedAt: text('updated_at').notNull().default(currentTimestamp)
   },
-  (table) => [index('idx_reports_status_created').on(table.status, table.createdAt, table.id)]
+  (table) => [index('idx_submissions_status_created').on(table.status, table.createdAt, table.id)]
 )
 
-export const reportImages = sqliteTable(
-  'report_images',
+export const submissionImages = sqliteTable(
+  'submission_images',
   {
     id: integer('id').primaryKey({ autoIncrement: true }),
-    reportId: integer('report_id').notNull(),
+    submissionId: integer('submission_id').notNull(),
     mimeType: text('mime_type').notNull(),
     filename: text('filename').notNull(),
     imageData: text('image_data').notNull(),
     createdAt: text('created_at').notNull().default(currentTimestamp)
   },
-  (table) => [index('idx_report_images_report_id').on(table.reportId, table.id)]
+  (table) => [index('idx_submission_images_submission_id').on(table.submissionId, table.id)]
 )
 
-export const blacklistEntryImages = sqliteTable(
-  'blacklist_entry_images',
+export const malwareEntryImages = sqliteTable(
+  'malware_entry_images',
   {
     id: integer('id').primaryKey({ autoIncrement: true }),
-    blacklistEntryId: integer('blacklist_entry_id').notNull(),
+    malwareEntryId: integer('malware_entry_id').notNull(),
     mimeType: text('mime_type').notNull(),
     filename: text('filename').notNull(),
     imageData: text('image_data').notNull(),
     createdAt: text('created_at').notNull().default(currentTimestamp)
   },
   (table) => [
-    index('idx_blacklist_entry_images_entry_id').on(table.blacklistEntryId, table.id)
+    index('idx_malware_entry_images_entry_id').on(table.malwareEntryId, table.id)
   ]
 )
 
-export const appeals = sqliteTable(
-  'appeals',
+export const corrections = sqliteTable(
+  'corrections',
   {
     id: integer('id').primaryKey({ autoIncrement: true }),
-    platform: text('platform').notNull(),
-    accountId: text('account_id').notNull(),
+    vendor: text('vendor').notNull(),
+    softwareName: text('software_name').notNull(),
     description: text('description').notNull(),
-    evidence: text('evidence').notNull(),
+    evidenceUrls: text('evidence_urls').notNull().default(''),
     status: text('status').notNull().default('pending'),
     adminNote: text('admin_note').notNull().default(''),
     createdAt: text('created_at').notNull().default(currentTimestamp),
     updatedAt: text('updated_at').notNull().default(currentTimestamp)
   },
-  (table) => [index('idx_appeals_status_created').on(table.status, table.createdAt, table.id)]
+  (table) => [index('idx_corrections_status_created').on(table.status, table.createdAt, table.id)]
 )
 
-export const reportTraces = sqliteTable(
-  'report_traces',
+export const submissionTraces = sqliteTable(
+  'submission_traces',
   {
     id: integer('id').primaryKey({ autoIncrement: true }),
-    reportId: integer('report_id').notNull(),
+    submissionId: integer('submission_id').notNull(),
     payload: text('payload').notNull(),
     createdAt: text('created_at').notNull().default(currentTimestamp)
   },
-  (table) => [index('idx_report_traces_report_id').on(table.reportId, table.id)]
+  (table) => [index('idx_submission_traces_submission_id').on(table.submissionId, table.id)]
 )
 
 export const rateLimitEvents = sqliteTable(

@@ -21,26 +21,27 @@ export const initSchema = async () => {
   ready = (async () => {
     const db = await getDb()
     await db.run(sql`
-      CREATE TABLE IF NOT EXISTS blacklist_entries (
+      CREATE TABLE IF NOT EXISTS malware_entries (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        platform TEXT NOT NULL,
-        account_id TEXT NOT NULL,
-        threat_level TEXT NOT NULL,
+        vendor TEXT NOT NULL,
+        software_name TEXT NOT NULL,
+        malware_category TEXT NOT NULL,
         description TEXT NOT NULL,
-        source_report_id INTEGER,
+        evidence_urls TEXT NOT NULL DEFAULT '',
+        source_submission_id INTEGER,
         created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
         updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        UNIQUE(platform, account_id)
+        UNIQUE(vendor, software_name)
       )
     `)
     await db.run(sql`
-      CREATE TABLE IF NOT EXISTS reports (
+      CREATE TABLE IF NOT EXISTS submissions (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        platform TEXT NOT NULL,
-        account_id TEXT NOT NULL,
-        threat_level TEXT NOT NULL,
+        vendor TEXT NOT NULL,
+        software_name TEXT NOT NULL,
+        malware_category TEXT NOT NULL,
         description TEXT NOT NULL,
-        evidence TEXT NOT NULL,
+        evidence_urls TEXT NOT NULL DEFAULT '',
         status TEXT NOT NULL DEFAULT 'pending',
         admin_note TEXT NOT NULL DEFAULT '',
         created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -48,9 +49,9 @@ export const initSchema = async () => {
       )
     `)
     await db.run(sql`
-      CREATE TABLE IF NOT EXISTS report_images (
+      CREATE TABLE IF NOT EXISTS submission_images (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        report_id INTEGER NOT NULL,
+        submission_id INTEGER NOT NULL,
         mime_type TEXT NOT NULL,
         filename TEXT NOT NULL,
         image_data TEXT NOT NULL,
@@ -58,9 +59,9 @@ export const initSchema = async () => {
       )
     `)
     await db.run(sql`
-      CREATE TABLE IF NOT EXISTS blacklist_entry_images (
+      CREATE TABLE IF NOT EXISTS malware_entry_images (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        blacklist_entry_id INTEGER NOT NULL,
+        malware_entry_id INTEGER NOT NULL,
         mime_type TEXT NOT NULL,
         filename TEXT NOT NULL,
         image_data TEXT NOT NULL,
@@ -68,12 +69,12 @@ export const initSchema = async () => {
       )
     `)
     await db.run(sql`
-      CREATE TABLE IF NOT EXISTS appeals (
+      CREATE TABLE IF NOT EXISTS corrections (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        platform TEXT NOT NULL,
-        account_id TEXT NOT NULL,
+        vendor TEXT NOT NULL,
+        software_name TEXT NOT NULL,
         description TEXT NOT NULL,
-        evidence TEXT NOT NULL,
+        evidence_urls TEXT NOT NULL DEFAULT '',
         status TEXT NOT NULL DEFAULT 'pending',
         admin_note TEXT NOT NULL DEFAULT '',
         created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -81,9 +82,9 @@ export const initSchema = async () => {
       )
     `)
     await db.run(sql`
-      CREATE TABLE IF NOT EXISTS report_traces (
+      CREATE TABLE IF NOT EXISTS submission_traces (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        report_id INTEGER NOT NULL,
+        submission_id INTEGER NOT NULL,
         payload TEXT NOT NULL,
         created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
       )
@@ -98,32 +99,36 @@ export const initSchema = async () => {
       )
     `)
     await db.run(sql`
-      CREATE INDEX IF NOT EXISTS idx_blacklist_lookup
-      ON blacklist_entries(platform, account_id)
+      CREATE INDEX IF NOT EXISTS idx_malware_lookup
+      ON malware_entries(vendor, software_name)
     `)
     await db.run(sql`
-      CREATE INDEX IF NOT EXISTS idx_blacklist_updated
-      ON blacklist_entries(updated_at, id)
+      CREATE INDEX IF NOT EXISTS idx_malware_updated
+      ON malware_entries(updated_at, id)
     `)
     await db.run(sql`
-      CREATE INDEX IF NOT EXISTS idx_reports_status_created
-      ON reports(status, created_at, id)
+      CREATE INDEX IF NOT EXISTS idx_malware_category
+      ON malware_entries(malware_category)
     `)
     await db.run(sql`
-      CREATE INDEX IF NOT EXISTS idx_appeals_status_created
-      ON appeals(status, created_at, id)
+      CREATE INDEX IF NOT EXISTS idx_submissions_status_created
+      ON submissions(status, created_at, id)
     `)
     await db.run(sql`
-      CREATE INDEX IF NOT EXISTS idx_report_images_report_id
-      ON report_images(report_id, id)
+      CREATE INDEX IF NOT EXISTS idx_corrections_status_created
+      ON corrections(status, created_at, id)
     `)
     await db.run(sql`
-      CREATE INDEX IF NOT EXISTS idx_blacklist_entry_images_entry_id
-      ON blacklist_entry_images(blacklist_entry_id, id)
+      CREATE INDEX IF NOT EXISTS idx_submission_images_submission_id
+      ON submission_images(submission_id, id)
     `)
     await db.run(sql`
-      CREATE INDEX IF NOT EXISTS idx_report_traces_report_id
-      ON report_traces(report_id, id)
+      CREATE INDEX IF NOT EXISTS idx_malware_entry_images_entry_id
+      ON malware_entry_images(malware_entry_id, id)
+    `)
+    await db.run(sql`
+      CREATE INDEX IF NOT EXISTS idx_submission_traces_submission_id
+      ON submission_traces(submission_id, id)
     `)
     await db.run(sql`
       CREATE INDEX IF NOT EXISTS idx_rate_limit_scope_ip_time

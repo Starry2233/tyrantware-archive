@@ -1,12 +1,11 @@
 <script lang="ts">
-import { route } from '@mateothegreat/svelte5-router'
-import { platforms, type SearchPayload } from '@fbls/shared'
+import { vendors, type SearchPayload } from '@tyrantware/shared'
 import { publicApi, messageOf } from '../lib/api'
 import { setFlash } from '../lib/state.svelte'
+import { isPureFrontend } from '../lib/pure-frontend'
 
-let platform = $state('')
-let accountId = $state('')
-let checkCode = $state('')
+let vendor = $state('')
+let softwareName = $state('')
 let result = $state<SearchPayload | null>(null)
 let loading = $state(false)
 
@@ -16,7 +15,7 @@ const submit = async (event: SubmitEvent) => {
   result = null
   setFlash(null)
   try {
-    result = await publicApi.search(platform, accountId, checkCode)
+    result = await publicApi.search(vendor, softwareName)
   } catch (error) {
     setFlash(messageOf('error', error instanceof Error ? error.message : '查询失败。'))
   } finally {
@@ -26,34 +25,35 @@ const submit = async (event: SubmitEvent) => {
 </script>
 
 <svelte:head>
-  <title>查询 - 福瑞联合净网行动</title>
+  <title>查询 - Tyrantware Archive</title>
 </svelte:head>
 
 <main class="single-panel">
   <div class="panel-header">
     <span class="eyebrow">Archive Lookup</span>
-    <h1>黑名单查询</h1>
+    <h1>恶意软件查询</h1>
     <p>
-      输入平台和账号名，页面会调用公开 API 检索已通过审核的记录。你也可以在外部程序中直接请求同一个接口。
+      输入软件厂商和软件名称，检索已通过审核的专有软件恶意行为记录。
     </p>
+    {#if isPureFrontend()}
+      <div class="note-panel" style="margin-top: 16px;">
+        <p>当前为纯前端模式，查询基于静态数据文件 <code>data/entries.json</code>，数据可能不是最新的。</p>
+      </div>
+    {/if}
   </div>
 
   <form class="form-panel compact" novalidate onsubmit={submit}>
-    <label>平台
-      <select bind:value={platform} required>
-        <option value="">请选择平台</option>
-        {#each platforms as item}
-          <option value={item}>{item}</option>
+    <label>软件厂商
+      <input bind:value={vendor} type="text" list="vendors-search" placeholder="例如：微软、腾讯" required />
+      <datalist id="vendors-search">
+        {#each vendors as item}
+          <option value={item}></option>
         {/each}
-      </select>
+      </datalist>
     </label>
 
-    <label>账号名 / 账号 ID
-      <input bind:value={accountId} type="text" placeholder="例如：user_12345" required />
-    </label>
-
-    <label>校验码
-      <input bind:value={checkCode} type="text" inputmode="numeric" placeholder="请输入校验码" required />
+    <label>软件名称
+      <input bind:value={softwareName} type="text" placeholder="例如：Windows 11, iTunes, Chrome" required />
     </label>
 
     <button class="primary-button" type="submit">
@@ -64,16 +64,17 @@ const submit = async (event: SubmitEvent) => {
   {#if loading}
     <section class="result-panel api-result-panel">
       <h2>查询中</h2>
-      <p>正在请求公开 API，请稍候。</p>
+      <p>正在请求档案库，请稍候。</p>
     </section>
   {:else if result?.found && result.entry}
     <section class="result-panel api-result-panel danger">
-      <h2>查询结果：命中黑名单</h2>
+      <h2>查询结果：已记录在案</h2>
       <dl>
-        <div><dt>平台</dt><dd>{result.entry.platform}</dd></div>
-        <div><dt>账号 ID</dt><dd>{result.entry.account_id}</dd></div>
-        <div><dt>威胁程度</dt><dd>{result.entry.threat_level}</dd></div>
+        <div><dt>软件厂商</dt><dd>{result.entry.vendor}</dd></div>
+        <div><dt>软件名称</dt><dd>{result.entry.software_name}</dd></div>
+        <div><dt>恶意行为类别</dt><dd>{result.entry.malware_category}</dd></div>
         <div><dt>描述</dt><dd>{result.entry.description}</dd></div>
+        <div><dt>证据来源</dt><dd>{result.entry.evidence_urls}</dd></div>
         <div><dt>录入时间</dt><dd>{result.entry.created_at}</dd></div>
         <div><dt>最后更新</dt><dd>{result.entry.updated_at}</dd></div>
       </dl>
@@ -89,10 +90,10 @@ const submit = async (event: SubmitEvent) => {
     </section>
   {:else if result}
     <section class="result-panel api-result-panel safe">
-      <h2>查询结果：未命中</h2>
+      <h2>查询结果：未收录</h2>
       <p>
-        当前黑名单中没有找到 <strong>{result.query.platform}</strong> 平台下账号
-        <strong>{result.query.account_id}</strong> 的审核通过记录。
+        档案库中当前没有 <strong>{result.query.vendor}</strong> 旗下软件
+        <strong>{result.query.software_name}</strong> 的恶意行为记录。
       </p>
     </section>
   {/if}

@@ -5,30 +5,29 @@ import { env } from './env'
 import { readAdminToken, signAdminToken, verifyAdmin } from './auth'
 import { checkRate } from './rate'
 import {
-  approveAppeal,
-  approveReport,
-  createAppeal,
-  createReport,
-  deleteBlacklistEntry,
-  deleteReport,
-  listBlacklistEntries,
-  listPendingAppeals,
-  listPendingReports,
-  readBlacklistImage,
-  readReportImage,
-  rejectAppeal,
-  rejectReport,
-  searchBlacklist
+  approveCorrection,
+  approveSubmission,
+  createCorrection,
+  createSubmission,
+  deleteMalwareEntry,
+  deleteSubmission,
+  rejectCorrection,
+  rejectSubmission,
+  listMalwareEntries,
+  listPendingCorrections,
+  listPendingSubmissions,
+  readMalwareImage,
+  readSubmissionImage,
+  searchMalware
 } from './repo'
 import {
-  validateAccount,
-  validateCheckCode,
   validateAgreement,
   validateDescription,
-  validateEvidence,
+  validateEvidenceUrls,
   validateImages,
-  validatePlatform,
-  validateThreat
+  validateMalwareCategory,
+  validateSoftwareName,
+  validateVendor
 } from './validate'
 import { writeTrace } from './trace'
 
@@ -59,12 +58,6 @@ const replyError = (error: unknown, fallback: string) =>
     ? fail(rateMessage, 429)
     : fail(error instanceof Error ? error.message : fallback)
 
-const verifyCheckCode = async (value: string) => {
-  if (value !== env.checkCode) {
-    throw new Error('校验码错误。')
-  }
-}
-
 const auth = async (request: Request) => {
   const token = request.headers.get('authorization')?.replace(/^Bearer\s+/i, '')
   if (!token) throw new HTTPException(401, { message: '未登录。' })
@@ -90,11 +83,11 @@ export const mountRoutes = (api: Hono) => {
     applyHeaders(c.res)
   })
 
-  api.use('/api/blacklist/search', cors({ origin: '*' }))
+  api.use('/api/search', cors({ origin: '*' }))
 
   api.get('/api/public-images/:id', async (c) => {
-    await checkRate('blacklist_image', 180, 300, c.req.raw)
-    const image = await readBlacklistImage(Number(c.req.param('id')))
+    await checkRate('malware_image', 180, 300, c.req.raw)
+    const image = await readMalwareImage(Number(c.req.param('id')))
     if (!image) throw new HTTPException(404)
     return new Response(bytesOf(image.imageData), {
       headers: {
@@ -104,24 +97,22 @@ export const mountRoutes = (api: Hono) => {
     })
   })
 
-  api.get('/api/blacklist/search', async (c) => {
+  api.get('/api/search', async (c) => {
     try {
       await checkRate('api_search', 60, 300, c.req.raw)
-      const platform = validatePlatform(c.req.query('platform') || '')
-      const accountId = validateAccount(c.req.query('account_id') || '')
-      const checkCode = validateCheckCode(c.req.query('check_code') || '')
-      await verifyCheckCode(checkCode)
-      const entry = await searchBlacklist(
+      const vendor = validateVendor(c.req.query('vendor') || '')
+      const softwareName = validateSoftwareName(c.req.query('software_name') || '')
+      const entry = await searchMalware(
         `${new URL(c.req.url).origin}`,
-        platform,
-        accountId
+        vendor,
+        softwareName
       )
 
       return ok(
         {
           success: true,
           found: Boolean(entry),
-          query: { platform, account_id: accountId },
+          query: { vendor, software_name: softwareName },
           entry
         },
         {
@@ -136,25 +127,23 @@ export const mountRoutes = (api: Hono) => {
     }
   })
 
-  api.post('/api/blacklist/search', async (c) => {
+  api.post('/api/search', async (c) => {
     try {
       await checkRate('api_search', 60, 300, c.req.raw)
       const body = await c.req.json()
-      const platform = validatePlatform(String(body.platform || ''))
-      const accountId = validateAccount(String(body.account_id || ''))
-      const checkCode = validateCheckCode(String(body.check_code || ''))
-      await verifyCheckCode(checkCode)
-      const entry = await searchBlacklist(
+      const vendor = validateVendor(String(body.vendor || ''))
+      const softwareName = validateSoftwareName(String(body.software_name || ''))
+      const entry = await searchMalware(
         `${new URL(c.req.url).origin}`,
-        platform,
-        accountId
+        vendor,
+        softwareName
       )
 
       return ok(
         {
           success: true,
           found: Boolean(entry),
-          query: { platform, account_id: accountId },
+          query: { vendor, software_name: softwareName },
           entry
         },
         {
@@ -169,56 +158,56 @@ export const mountRoutes = (api: Hono) => {
     }
   })
 
-  api.post('/api/reports', async (c) => {
+  api.post('/api/submissions', async (c) => {
     try {
       if (tooLarge(c.req.raw)) return fail('请求体过大。', 413)
-      await checkRate('report', 10, 600, c.req.raw)
+      await checkRate('submission', 10, 600, c.req.raw)
       const form = await c.req.formData()
-      const platform = validatePlatform(String(form.get('platform') || ''))
-      const accountId = validateAccount(String(form.get('account_id') || ''))
-      const threatLevel = validateThreat(String(form.get('threat_level') || ''))
+      const vendor = validateVendor(String(form.get('vendor') || ''))
+      const softwareName = validateSoftwareName(String(form.get('software_name') || ''))
+      const malwareCategory = validateMalwareCategory(String(form.get('malware_category') || ''))
       const description = validateDescription(String(form.get('description') || ''))
-      const evidence = validateEvidence(String(form.get('evidence') || ''))
+      const evidenceUrls = validateEvidenceUrls(String(form.get('evidence_urls') || ''))
       validateAgreement(form.get('license_agreement')?.toString() || null)
       const images = await validateImages(form.getAll('images') as File[])
 
       const payload = {
-        accountId,
+        vendor,
+        softwareName,
+        malwareCategory,
         description,
-        evidence,
-        images,
-        platform,
-        threatLevel
+        evidenceUrls,
+        images
       }
-      const id = await createReport(payload)
+      const id = await createSubmission(payload)
 
       try {
         await writeTrace(id, payload, c.req.raw)
       } catch (error) {
-        await deleteReport(id)
+        await deleteSubmission(id)
         throw error
       }
 
-      return ok({ success: true, message: '举报已提交，等待管理员审核。' })
+      return ok({ success: true, message: '恶意软件记录已提交，等待管理员审核。' })
     } catch (error) {
-      return replyError(error, '举报提交失败。')
+      return replyError(error, '提交失败。')
     }
   })
 
-  api.post('/api/appeals', async (c) => {
+  api.post('/api/corrections', async (c) => {
     try {
       if (tooLarge(c.req.raw)) return fail('请求体过大。', 413)
-      await checkRate('appeal', 10, 600, c.req.raw)
+      await checkRate('correction', 10, 600, c.req.raw)
       const body = await c.req.json()
-      const platform = validatePlatform(String(body.platform || ''))
-      const accountId = validateAccount(String(body.account_id || ''))
+      const vendor = validateVendor(String(body.vendor || ''))
+      const softwareName = validateSoftwareName(String(body.software_name || ''))
       const description = validateDescription(String(body.description || ''))
-      const evidence = validateEvidence(String(body.evidence || ''))
+      const evidenceUrls = validateEvidenceUrls(String(body.evidence_urls || ''))
       validateAgreement(String(body.license_agreement || null))
-      await createAppeal({ accountId, description, evidence, platform })
-      return ok({ success: true, message: '申诉已提交，等待管理员审核。' })
+      await createCorrection({ vendor, softwareName, description, evidenceUrls })
+      return ok({ success: true, message: '更正请求已提交，等待管理员审核。' })
     } catch (error) {
-      return replyError(error, '申诉提交失败。')
+      return replyError(error, '更正请求提交失败。')
     }
   })
 
@@ -245,77 +234,77 @@ export const mountRoutes = (api: Hono) => {
   api.get('/api/admin/dashboard', async (c) => {
     await auth(c.req.raw)
     return ok({
-      reports: await listPendingReports(),
-      appeals: await listPendingAppeals(),
-      blacklistEntries: await listBlacklistEntries()
+      submissions: await listPendingSubmissions(),
+      corrections: await listPendingCorrections(),
+      malwareEntries: await listMalwareEntries()
     })
   })
 
-  api.post('/api/admin/reports/:id/approve', async (c) => {
+  api.post('/api/admin/submissions/:id/approve', async (c) => {
     await auth(c.req.raw)
     const body = await c.req.json()
     const id = Number(c.req.param('id'))
-    const done = await approveReport(
+    const done = await approveSubmission(
       id,
       String(body.admin_note || ''),
-      validateThreat(String(body.threat_level || ''))
+      validateMalwareCategory(String(body.malware_category || ''))
     )
     return done
-      ? ok({ success: true, message: `举报 #${id} 已通过并写入黑名单。` })
-      : fail(`举报 #${id} 不存在或已处理。`, 404)
+      ? ok({ success: true, message: `提交 #${id} 已通过并写入恶意软件档案库。` })
+      : fail(`提交 #${id} 不存在或已处理。`, 404)
   })
 
-  api.post('/api/admin/reports/:id/reject', async (c) => {
+  api.post('/api/admin/submissions/:id/reject', async (c) => {
     await auth(c.req.raw)
     const id = Number(c.req.param('id'))
     const body = await c.req.json()
-    const done = await rejectReport(id, String(body.admin_note || ''))
+    const done = await rejectSubmission(id, String(body.admin_note || ''))
     return done
-      ? ok({ success: true, message: `举报 #${id} 已驳回。` })
-      : fail(`举报 #${id} 不存在或已处理。`, 404)
+      ? ok({ success: true, message: `提交 #${id} 已驳回。` })
+      : fail(`提交 #${id} 不存在或已处理。`, 404)
   })
 
-  api.post('/api/admin/appeals/:id/approve', async (c) => {
+  api.post('/api/admin/corrections/:id/approve', async (c) => {
     await auth(c.req.raw)
     const id = Number(c.req.param('id'))
     const body = await c.req.json()
-    const done = await approveAppeal(id, String(body.admin_note || ''))
+    const done = await approveCorrection(id, String(body.admin_note || ''))
     return done
-      ? ok({ success: true, message: `申诉 #${id} 已通过，黑名单记录已删除。` })
-      : fail(`申诉 #${id} 不存在或已处理。`, 404)
+      ? ok({ success: true, message: `更正请求 #${id} 已通过，档案记录已删除。` })
+      : fail(`更正请求 #${id} 不存在或已处理。`, 404)
   })
 
-  api.post('/api/admin/appeals/:id/reject', async (c) => {
+  api.post('/api/admin/corrections/:id/reject', async (c) => {
     await auth(c.req.raw)
     const id = Number(c.req.param('id'))
     const body = await c.req.json()
-    const done = await rejectAppeal(id, String(body.admin_note || ''))
+    const done = await rejectCorrection(id, String(body.admin_note || ''))
     return done
-      ? ok({ success: true, message: `申诉 #${id} 已驳回。` })
-      : fail(`申诉 #${id} 不存在或已处理。`, 404)
+      ? ok({ success: true, message: `更正请求 #${id} 已驳回。` })
+      : fail(`更正请求 #${id} 不存在或已处理。`, 404)
   })
 
-  api.post('/api/admin/blacklist/:id/delete', async (c) => {
+  api.post('/api/admin/malware/:id/delete', async (c) => {
     await auth(c.req.raw)
     const id = Number(c.req.param('id'))
-    const done = await deleteBlacklistEntry(id)
+    const done = await deleteMalwareEntry(id)
     return done
-      ? ok({ success: true, message: `黑名单条目 #${id} 已删除。` })
-      : fail(`黑名单条目 #${id} 不存在。`, 404)
+      ? ok({ success: true, message: `档案条目 #${id} 已删除。` })
+      : fail(`档案条目 #${id} 不存在。`, 404)
   })
 
-  api.get('/api/admin/report-images/:id', async (c) => {
+  api.get('/api/admin/submission-images/:id', async (c) => {
     await auth(c.req.raw)
-    const image = await readReportImage(Number(c.req.param('id')))
+    const image = await readSubmissionImage(Number(c.req.param('id')))
     if (!image) throw new HTTPException(404)
     return new Response(bytesOf(image.imageData), {
       headers: { 'Content-Type': image.mimeType }
     })
   })
 
-  api.get('/api/admin/blacklist-images/:id', async (c) => {
+  api.get('/api/admin/malware-images/:id', async (c) => {
     await auth(c.req.raw)
-    const image = await readBlacklistImage(Number(c.req.param('id')))
+    const image = await readMalwareImage(Number(c.req.param('id')))
     if (!image) throw new HTTPException(404)
     return new Response(bytesOf(image.imageData), {
       headers: { 'Content-Type': image.mimeType }

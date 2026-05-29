@@ -3,4 +3,4 @@ dist
 .vercel
 apps/api/.env
 apps/api/.env.local
-apps/api/blacklist.db
+apps/api/tyrantware.db

@@ -1,4 +1,4 @@
-const key = 'fbls-admin-auth'
+const key = 'tyrantware-admin-auth'
 
 const saved =
   typeof localStorage === 'undefined'

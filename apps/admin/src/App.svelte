@@ -5,7 +5,7 @@ import { flash } from './lib/state.svelte'
 </script>
 
 <svelte:head>
-  <title>后台管理 - 黑名单系统</title>
+  <title>后台管理 - Tyrantware Archive</title>
 </svelte:head>
 
 <div class="page-shell">
