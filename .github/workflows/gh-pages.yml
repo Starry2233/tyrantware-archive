@@ -19,7 +19,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: npm install
+      - run: npm install --workspaces
       - name: Build public frontend for GitHub Pages
         working-directory: apps/public
         run: VITE_PURE_FRONTEND=true npx vite build
