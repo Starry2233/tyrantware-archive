@@ -16,18 +16,16 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
-      - run: bun install
-      - run: bun run build:gh-pages
-        env:
-          VITE_GH_REPO: Starry2233/tyrantware-archive
-          VITE_GH_BRANCH: main
-        env:
-          VITE_GH_REPO: Starry2233/tyrantware-archive
-          VITE_GH_BRANCH: main
-      - uses: actions/configure-pages@v5
+      - uses: actions/setup-node@v4
         with:
-          static_site_generator: vite
+          node-version: 22
+      - run: npm install
+      - name: Build public frontend for GitHub Pages
+        working-directory: apps/public
+        run: VITE_PURE_FRONTEND=true npx vite build
+        env:
+          VITE_GH_REPO: Starry2233/tyrantware-archive
+          VITE_GH_BRANCH: main
       - uses: actions/upload-pages-artifact@v3
         with:
           path: apps/public/dist
