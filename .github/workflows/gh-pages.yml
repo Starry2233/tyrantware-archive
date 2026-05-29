@@ -20,7 +20,7 @@ jobs:
       - run: bun install
       - name: Build public frontend for GitHub Pages
         working-directory: apps/public
-        run: VITE_PURE_FRONTEND=true npx vite build --config vite.gh-pages.ts
+        run: VITE_PURE_FRONTEND=true npx vite build
         env:
           VITE_GH_REPO: Starry2233/tyrantware-archive
           VITE_GH_BRANCH: main

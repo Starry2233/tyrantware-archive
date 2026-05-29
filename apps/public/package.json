@@ -1,14 +1,16 @@
 {
-  "name": "@fbls/public",
+  "name": "@tyrantware/public",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite dev",
+    "dev:gh-pages": "VITE_PURE_FRONTEND=true vite dev",
     "build": "vite build",
+    "build:gh-pages": "VITE_PURE_FRONTEND=true vite build",
     "check": "tsc --project tsconfig.json"
   },
   "dependencies": {
-    "@fbls/shared": "workspace:*",
+    "@tyrantware/shared": "workspace:*",
     "@mateothegreat/svelte5-router": "^2.16.19",
     "svelte": "^5.43.2"
   },
