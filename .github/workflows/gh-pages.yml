@@ -1,0 +1,33 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install
+      - run: bun run build:gh-pages
+        env:
+          VITE_PURE_FRONTEND: 'true'
+          VITE_GH_REPO: Starry2233/tyrantware-archive
+          VITE_GH_BRANCH: main
+      - uses: actions/configure-pages@v5
+        with:
+          static_site_generator: vite
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: apps/public/dist
+      - id: deployment
+        uses: actions/deploy-pages@v4
