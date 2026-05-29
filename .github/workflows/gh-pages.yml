@@ -18,9 +18,10 @@ jobs:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
       - run: bun install
-      - name: Build public frontend for GitHub Pages
-        working-directory: apps/public
-        run: VITE_PURE_FRONTEND=true npx vite build
+      - run: bun run build:gh-pages
+        env:
+          VITE_GH_REPO: Starry2233/tyrantware-archive
+          VITE_GH_BRANCH: main
         env:
           VITE_GH_REPO: Starry2233/tyrantware-archive
           VITE_GH_BRANCH: main
