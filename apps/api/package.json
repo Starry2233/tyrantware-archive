@@ -9,7 +9,7 @@
     "schema": "bun src/scripts/seed.ts"
   },
   "dependencies": {
-    "@tyrantware/shared": "*",
+    "@tyrantware/shared": "workspace:*",
     "@libsql/client": "^0.15.1",
     "drizzle-orm": "^0.45.2",
     "hono": "^4.12.23",

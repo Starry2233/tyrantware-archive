@@ -8,7 +8,7 @@
     "check": "tsc --project tsconfig.json"
   },
   "dependencies": {
-    "@tyrantware/shared": "*",
+    "@tyrantware/shared": "workspace:*",
     "@mateothegreat/svelte5-router": "^2.16.19",
     "svelte": "^5.43.2"
   },
