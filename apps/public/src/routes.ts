@@ -11,6 +11,7 @@ export const routes = [
 ]
 
 export const routerConfig = {
+  basePath: import.meta.env.BASE_URL || '/',
   statuses: {
     [StatusCode.NotFound]: () => ({
       component: NotFound,
